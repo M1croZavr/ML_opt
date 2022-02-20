@@ -53,11 +53,13 @@ def find_lagrange_2var(vars_, fun_anl, fun_constr, constr=None, plot=False):
     fun = preproc_fun(fun_anl)
     fun_c = preproc_fun(fun_constr)
     lagrange = fun + l * fun_c
-
     if constr is None:
         m_points = sympy.solve([lagrange.diff(var1), lagrange.diff(var2), fun_c], dict=True)
     else:
-        m_points = check_constraints(sympy.solve([lagrange.diff(var1), lagrange.diff(var2), fun_c], dict=True), constr, vars_)
+        m_points = check_constraints(sympy.solve([lagrange.diff(var1), lagrange.diff(var2), fun_c], dict=True),
+                                     # Искусственное ограничение на лямбду
+                                     [(float('-inf'), float('+inf'))] + constr,
+                                     vars_)
 
     for m in m_points:
         coord1, coord2, label = find_extremum_lagrange(fun_c, lagrange, m, var1, var2)
