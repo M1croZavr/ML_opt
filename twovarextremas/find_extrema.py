@@ -1,8 +1,8 @@
 import sympy
 import numpy as np
-from ML_opt_lib.plotting_3d import make_3d_plot, make_3d_plot_lagrange
+from plotting_3d import make_3d_plot, make_3d_plot_lagrange
 from utils_check import preproc_fun, check_constraints
-from ML_opt_lib.extrema_methods import find_extremum, find_extremum_lagrange
+from extrema_methods import find_extremum, find_extremum_lagrange
 
 
 def find_local_2var(vars_, fun_anl, constr=None, plot=False):
