@@ -1,8 +1,9 @@
 from matplotlib import pyplot as plt, cm
+import numpy as np
 
 
 def make_3d_plot(X, Y, Z, m_points, var1, var2, fun):
-    """Draw 3D plot according to passed values. Draws plane and extemums as dots."""
+    """Draw 3D plot according to passed values. Draws plane and extrema as dots."""
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(15, 7))
     for i, m in enumerate(m_points):
         coord1, coord2 = m.values()
@@ -11,18 +12,18 @@ def make_3d_plot(X, Y, Z, m_points, var1, var2, fun):
                    float(fun.subs([(var1, coord1), (var2, coord2)])),
                    c='black',
                    s=40,
-                   label=f'Extremum{i}')
+                   label=f'Extrema{i}')
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.plot_surface(X, Y, Z, cmap=cm.winter, alpha=0.5)
     plt.legend()
-    ax.set_title('Plane and extremum points')
+    ax.set_title('Plane and extrema points')
     plt.show()
 
 
-def make_3d_plot_lagrange(X, Y, Z1, Z2, m_points, var1, var2, fun, fun_c):
-    """Draw 3D plot according to passed values. Draws plane and extemums as dots."""
+def make_3d_plot_lagrange(X, Y, Z1, Z2, m_points, var1, var2, fun):
+    """Draw 3D plot according to passed values. Draws plane and extrema as dots."""
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(15, 7))
     for i, m in enumerate(m_points):
         coord1, coord2 = list(m.values())[1:]
@@ -31,12 +32,33 @@ def make_3d_plot_lagrange(X, Y, Z1, Z2, m_points, var1, var2, fun, fun_c):
                    float(fun.subs([(var1, coord1), (var2, coord2)])),
                    c='red',
                    s=30,
-                   label=f'Extremum{i}')
+                   label=f'Extrema{i}')
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-    ax.plot_surface(X, Y, Z1, cmap=cm.hot, alpha=0.3)
-    ax.plot_surface(X, Y, Z2, cmap=cm.winter, alpha=0.5)
+    ax.plot_surface(X, Y, Z1, cmap=cm.winter, alpha=0.5)
+    ax.plot_surface(X, Y, Z2, cmap=cm.hot, alpha=0.6)
     plt.legend()
-    ax.set_title('Plane and extremum points')
+    ax.set_title('Plane and extrema points')
+    plt.show()
+
+
+def make_level_lines_plot(X, Y, Z, m_points, var1, var2, fun_c=None):
+    """Draw level lines plot according to passed values. Draws countour and extrema as dots."""
+    plt.figure(figsize=(10, 6))
+    for i, m in enumerate(m_points):
+        coord1, coord2 = m[var1], m[var2]
+        plt.scatter(coord1,
+                    coord2,
+                    c='black',
+                    label=f'Extrema{i}')
+    plt.contourf(X, Y, Z, 10, cmap='viridis', alpha=0.6)
+    plt.colorbar()
+    if fun_c:
+        Z_c = np.array([[float(fun_c.subs([('x', x), ('y', y)])) for x, y in zip(x_i, y_i)] for x_i, y_i in zip(X, Y)])
+        plt.contour(X, Y, Z_c, 0)
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.legend()
+    plt.title('Level lines and extrema points')
     plt.show()
