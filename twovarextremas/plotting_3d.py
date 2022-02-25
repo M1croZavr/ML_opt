@@ -17,7 +17,8 @@ def make_3d_plot(X, Y, Z, m_points, var1, var2, fun):
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.plot_surface(X, Y, Z, cmap=cm.winter, alpha=0.5)
-    plt.legend()
+    if m_points:
+        plt.legend()
     ax.set_title('Plane and extrema points')
     plt.show()
 
@@ -38,7 +39,8 @@ def make_3d_plot_lagrange(X, Y, Z1, Z2, m_points, var1, var2, fun):
     ax.set_zlabel('Z')
     ax.plot_surface(X, Y, Z1, cmap=cm.winter, alpha=0.5)
     ax.plot_surface(X, Y, Z2, cmap=cm.hot, alpha=0.6)
-    plt.legend()
+    if m_points:
+        plt.legend()
     ax.set_title('Plane and extrema points')
     plt.show()
 
@@ -59,6 +61,7 @@ def make_level_lines_plot(X, Y, Z, m_points, var1, var2, fun_c=None):
         plt.contour(X, Y, Z_c, 0)
     plt.xlabel('X')
     plt.ylabel('Y')
-    plt.legend()
+    if m_points:
+        plt.legend()
     plt.title('Level lines and extrema points')
     plt.show()
