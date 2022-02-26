@@ -45,7 +45,7 @@ def make_3d_plot_lagrange(X, Y, Z1, Z2, m_points, var1, var2, fun):
     plt.show()
 
 
-def make_level_lines_plot(X, Y, Z, m_points, var1, var2, fun_c=None):
+def make_level_lines_plot(X, Y, Z, m_points, var1, var2, Z_c=None):
     """Draw level lines plot according to passed values. Draws countour and extrema as dots."""
     plt.figure(figsize=(10, 6))
     for i, m in enumerate(m_points):
@@ -56,8 +56,7 @@ def make_level_lines_plot(X, Y, Z, m_points, var1, var2, fun_c=None):
                     label=f'Extrema{i}')
     plt.contourf(X, Y, Z, 10, cmap='viridis', alpha=0.6)
     plt.colorbar()
-    if fun_c:
-        Z_c = np.array([[float(fun_c.subs([('x', x), ('y', y)])) for x, y in zip(x_i, y_i)] for x_i, y_i in zip(X, Y)])
+    if not(Z_c is None):
         plt.contour(X, Y, Z_c, 0)
     plt.xlabel('X')
     plt.ylabel('Y')
