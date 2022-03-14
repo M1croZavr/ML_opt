@@ -4,4 +4,4 @@ import onedimensionaloptimization
 
 
 # print(onedimensionaloptimization.)
-print(twovarextremas)
+print(twovarextremas.find_extrema)

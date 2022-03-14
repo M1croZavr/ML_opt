@@ -1,0 +1,6 @@
+# Default ignored files
+/shelf/
+/.idea
+/.ipynb_checkpoints
+/__init__.py
+/main.py
