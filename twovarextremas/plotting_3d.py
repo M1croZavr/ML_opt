@@ -1,5 +1,4 @@
 from matplotlib import pyplot as plt, cm
-import numpy as np
 
 
 def make_3d_plot(X, Y, Z, m_points, var1, var2, fun):

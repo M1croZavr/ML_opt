@@ -1,8 +1,8 @@
 import numpy as np
 
 
-def find_extremum(fun, var1, var2, m):
-    """Return coordinates and kind of extremum or additional research required otherwise."""
+def find_extrema(fun, var1, var2, m):
+    """Return coordinates and kind of extrema or additional research required otherwise."""
     A = fun.diff(var1).diff(var1).subs([(var1, m[var1]), (var2, m[var2])])
     B = fun.diff(var1).diff(var2).subs([(var1, m[var1]), (var2, m[var2])])
     C = fun.diff(var2).diff(var2).subs([(var1, m[var1]), (var2, m[var2])])
@@ -19,8 +19,8 @@ def find_extremum(fun, var1, var2, m):
     return m[var1], m[var2], label
 
 
-def find_extremum_lagrange(fun_c, lagrange, m, var1, var2):
-    """Return coordinates and kind of extremum found by matrix forms."""
+def find_extrema_lagrange(fun_c, lagrange, m, var1, var2):
+    """Return coordinates and kind of extrema found by matrix forms."""
     fun_c_var1 = float(fun_c.diff(var1).subs(m))
     fun_c_var2 = float(fun_c.diff(var2).subs(m))
     l_11 = float(lagrange.diff(var1).diff(var1).subs(m))

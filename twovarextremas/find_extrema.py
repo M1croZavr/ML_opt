@@ -1,8 +1,7 @@
 import sympy
-import numpy as np
-from plotting_3d import make_3d_plot, make_3d_plot_lagrange, make_level_lines_plot
-from utils_check import preproc_fun, check_constraints, create_xyz
-from extrema_methods import find_extremum, find_extremum_lagrange
+from .plotting_3d import make_3d_plot, make_3d_plot_lagrange, make_level_lines_plot
+from .utils_twovarextremas import preproc_fun, check_constraints, create_xyz
+from .extrema_methods import find_extrema, find_extrema_lagrange
 
 
 def find_local_2var(vars_, fun_anl, constr=None, plot=False, plot_ll=False):
@@ -27,7 +26,7 @@ def find_local_2var(vars_, fun_anl, constr=None, plot=False, plot_ll=False):
 
     if m_points:
         for m in m_points:
-            coord1, coord2, label = find_extremum(fun, var1, var2, m)
+            coord1, coord2, label = find_extrema(fun, var1, var2, m)
             print(f'Point: ({float(coord1)}, {float(coord2)}) | Z: {float(fun.subs(m))} | Extrema: {label}')
     else:
         print('No extrema has been found!')
@@ -72,7 +71,7 @@ def find_lagrange_2var(vars_, fun_anl, fun_constr, constr=None, plot=False, plot
 
     if m_points:
         for m in m_points:
-            coord1, coord2, label = find_extremum_lagrange(fun_c, lagrange, m, var1, var2)
+            coord1, coord2, label = find_extrema_lagrange(fun_c, lagrange, m, var1, var2)
             print(f'Point: ({float(coord1)}, {float(coord2)}) | Z: {float(fun.subs(m))} | Extrema: {label}')
     else:
         print('No extrema has been found! ')
