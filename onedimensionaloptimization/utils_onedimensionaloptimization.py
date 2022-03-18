@@ -48,10 +48,10 @@ def parabolic_approximation(x1, x2, x3, f1, f2, f3):
     return u, cfs[a], cfs[b], cfs[c]
 
 
-def spi_behaving(v, w, x, fv, fw, fx, x_l, x_r, g):
+def spi_behaving(v, w, x, fv, fw, fx, x_l, x_r, g, eps):
     if (x != w) and (x != v) and (w != v):
         u, a, b, c = parabolic_approximation(v, x, w, fv, fx, fw)  # Параболическая аппроксимация, находим u
-        if (x_l <= u <= x_r) and (abs(u - x) <= abs(g) / 2):
+        if (x_l + eps <= u <= x_r - eps) and (abs(u - x) <= abs(g) / 2):
             return u, a, b, c
     return False
 
