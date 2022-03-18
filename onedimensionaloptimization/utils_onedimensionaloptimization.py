@@ -44,7 +44,6 @@ def parabolic_approximation(x1, x2, x3, f1, f2, f3):
     cfs = sympy.solve([a * x1 ** 2 + b * x1 + c - f1, a * x2 ** 2 + b * x2 + c - f2, a * x3 ** 2 + b * x3 + c - f3],
                       [a, b, c],
                       dict=True)[0]
-    #  u = x2 - ((x2 - x1) ** 2 * (f2 - f3) - (x2 - x3) ** 2 * (f2 - f1)) / (2 * ((x2 - x1) * (f2 - f3) - (x2 - x3) * (f2 - f1)))
     u = -cfs[b] / (2 * cfs[a])
     return u, cfs[a], cfs[b], cfs[c]
 
@@ -53,7 +52,7 @@ def spi_behaving(v, w, x, fv, fw, fx, x_l, x_r, g):
     if (x != w) and (x != v) and (w != v):
         u, a, b, c = parabolic_approximation(v, x, w, fv, fx, fw)  # Параболическая аппроксимация, находим u
         if (x_l <= u <= x_r) and (abs(u - x) <= abs(g) / 2):
-            return True
+            return u, a, b, c
     return False
 
 
