@@ -49,6 +49,7 @@ def parabolic_approximation(x1, x2, x3, f1, f2, f3):
 
 
 def spi_behaving(v, w, x, fv, fw, fx, x_l, x_r, g, eps):
+    """Checks successive parabolic interpolation(SPI) conditions and returns parameters if correct"""
     if (x != w) and (x != v) and (w != v):
         u, a, b, c = parabolic_approximation(v, x, w, fv, fx, fw)  # Параболическая аппроксимация, находим u
         if (x_l + eps <= u <= x_r - eps) and (abs(u - x) <= abs(g) / 2):

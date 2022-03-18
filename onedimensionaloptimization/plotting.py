@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 
 
 def plot_scatter_and_line(X, Y, x, y, names):
+    """Draw function line and points of algorithm at the current iteration"""
     plt.figure(figsize=(12, 6))
     plt.plot(X, Y, 'b-', label='Function')
     coordinates = list(zip(x, y))
@@ -16,6 +17,7 @@ def plot_scatter_and_line(X, Y, x, y, names):
 
 
 def plot_parabola_and_line(X, Y, u, a, b, c):
+    """Draw function line and current approximating parabola with point at the top at the current iteration"""
     plt.figure(figsize=(12, 6))
     plt.plot(X, Y, 'b-', label='Function')
     plt.plot(X, [a * x_i ** 2 + b * x_i + c for x_i in X], 'r--', label='Approximating parabola')
