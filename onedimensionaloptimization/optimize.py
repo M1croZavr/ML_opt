@@ -244,8 +244,8 @@ def brent_method(fun_anl, x_l, x_r,
 
 
 def bfgs(fun_anl, x0,
-         c1=0.0001, c2=0.9, x_max=100, threshold=1e-5, max_iter=500, print_info=False, record_info=False):
-    """Optimizes function of 1 variable by Brent's method.
+         c1=0.0001, c2=0.1, x_max=100, threshold=1e-5, max_iter=500, print_info=False, record_info=False):
+    """Optimizes function of 1 variable by Broyden — Fletcher — Goldfarb — Shanno algorithm.
 
     Positional arguments:
     fun_anl -- function analytic form
@@ -273,16 +273,21 @@ def bfgs(fun_anl, x0,
     else:
         df = None
     for i in range(max_iter):
-        p = -C * grf
-        # Find alpha that satisfies strong Wolfe conditions
-        alpha = line_search(lambda_fun, lambda_fun_gradient, x, p, c1=c1, c2=c2, gfk=grf)[0]
-        x_next = x + alpha * p
-        s = x_next - x
-        y = lambda_fun_gradient(x_next) - grf
-        ro = 1.0 / (y * s)
-        C = ((1 - ro * s * y) * C * (1 - ro * y * s)) + ro * s * s
-        x = x_next
-        grf = lambda_fun_gradient(x)
+        try:
+            # 0.01 - kind of learning rate
+            p = 0.01 * (-C * grf)
+            # Find alpha that satisfies strong Wolfe conditions
+            alpha = line_search(lambda_fun, lambda_fun_gradient, x, p, c1=c1, c2=c2, gfk=grf)[0]
+            x_next = x + alpha * p
+            s = x_next - x
+            y = lambda_fun_gradient(x_next) - grf
+            ro = 1.0 / (y * s)
+            C = ((1 - ro * s * y) * C * (1 - ro * y * s)) + ro * s * s
+            x = x_next
+            grf = lambda_fun_gradient(x)
+        except Exception:
+            print('Выполнено с ошибкой')
+            return None
         if print_info:
             print(f'k: {i + 1} | x: {x} | alpha: {alpha} | p: {p} | s: {s} | y: {y} | c: {C} | delta_fun: {grf}')
         if record_info:
@@ -292,7 +297,7 @@ def bfgs(fun_anl, x0,
             print('Достигнуто ограничение на максимально возможное значение аргумента')
             break
         if abs(grf) <= threshold:
-            print('Найдено значение с заданной точностью')
+            print('Точка, удовлетворяющая условию Вольфе, найдена с заданной точностью')
             break
     else:
         print('Достигнуто максимальное количество итераций')
