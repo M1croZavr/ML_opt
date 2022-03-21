@@ -32,7 +32,7 @@ def golden_section_search(fun_anl, x_l, x_r,
     c, d = b + (a - b) / phi, a + (b - a) / phi
     fc, fd = fun.subs(var, c), fun.subs(var, d)
     if plot:
-        X = np.linspace(a, b, 30)
+        X = np.linspace(a, b, 100)
         Y = [fun.subs(var, x_i) for x_i in X]
         plot_scatter_and_line(X, Y, [a, b, c, d],
                               [fun.subs(var, a), fun.subs(var, b), fc, fd],
@@ -106,7 +106,7 @@ def parabola_method(fun_anl, x_l, x_r,
         print('Выполнено с ошибкой (нет точки минимума)')
         return None
     if plot:
-        X = np.linspace(x1, x3, 30)
+        X = np.linspace(x1, x3, 100)
         Y = [fun.subs(var, x_i) for x_i in X]
     if record_info:
         df = pd.DataFrame(columns=['x1', 'x2', 'x3', 'f_u', 'u'])
@@ -165,7 +165,7 @@ def brent_method(fun_anl, x_l, x_r,
     fv = fw = fx = fun.subs(var, x)
     d = e = b - a
     if plot:
-        X = np.linspace(a, b, 30)
+        X = np.linspace(a, b, 100)
         Y = [fun.subs(var, x_i) for x_i in X]
     if record_info:
         df = pd.DataFrame(columns=['a', 'b', 'x', 'w', 'v', 'fx', 'method'])
@@ -244,7 +244,8 @@ def brent_method(fun_anl, x_l, x_r,
 
 
 def bfgs(fun_anl, x0,
-         c1=0.0001, c2=0.1, x_max=100, threshold=1e-5, max_iter=500, print_info=False, record_info=False):
+         c1=0.0001, c2=0.1, x_max=100, threshold=1e-5, max_iter=500, nu=0.01,
+         print_info=False, record_info=False, plot=False):
     """Optimizes function of 1 variable by Broyden — Fletcher — Goldfarb — Shanno algorithm.
 
     Positional arguments:
@@ -257,6 +258,7 @@ def bfgs(fun_anl, x0,
     x_max -- max value of function argument(default=100)
     threshold -- exit threshold by search interval length(default=1e-8)
     max_iter -- Maximum iteration of algorithm(default=500)
+    nu -- kind of learning rate in gradients(default=0.01)
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
     plot -- Draw plot(default=False)
@@ -268,14 +270,16 @@ def bfgs(fun_anl, x0,
     x = float(x0)
     grf = lambda_fun_gradient(x)
     C = 1
+    if plot:
+        X = np.linspace(x0 - x0 * 10, x0 + x0 * 10, 100)
+        Y = [fun.subs(var, x_i) for x_i in X]
     if record_info:
         df = pd.DataFrame(columns=['x', 'alpha', 'p', 's', 'y', 'c', 'delta_fun'])
     else:
         df = None
     for i in range(max_iter):
         try:
-            # 0.01 - kind of learning rate
-            p = 0.01 * (-C * grf)
+            p = nu * (-C * grf)
             # Find alpha that satisfies strong Wolfe conditions
             alpha = line_search(lambda_fun, lambda_fun_gradient, x, p, c1=c1, c2=c2, gfk=grf)[0]
             x_next = x + alpha * p
@@ -288,6 +292,10 @@ def bfgs(fun_anl, x0,
         except Exception:
             print('Выполнено с ошибкой')
             return None
+        if plot:
+            plot_scatter_and_line(X, Y, [x],
+                                  [lambda_fun(x)],
+                                  ['x'])
         if print_info:
             print(f'k: {i + 1} | x: {x} | alpha: {alpha} | p: {p} | s: {s} | y: {y} | c: {C} | delta_fun: {grf}')
         if record_info:

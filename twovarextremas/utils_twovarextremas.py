@@ -11,6 +11,7 @@ class NonDifferentialError(Exception):
 def preproc_fun(fun_anl):
     """Return preprocessed function as sympy object function."""
     fun = fun_anl.replace('^', '**').replace('–', '-')
+    fun = fun.replace('pi', str(np.pi)).replace('sympy.pi', str(np.pi))
     assert not('=' in fun), '"=" symbol is not allowed!'
     logs = re.findall(r'log[\d\s]+\([^).]+\)', fun)
     for log in logs:
