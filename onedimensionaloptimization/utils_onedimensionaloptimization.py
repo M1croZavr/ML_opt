@@ -55,6 +55,3 @@ def spi_behaving(v, w, x, fv, fw, fx, x_l, x_r, g, eps):
         if (x_l + eps <= u <= x_r - eps) and (abs(u - x) <= abs(g) / 2):
             return u, a, b, c
     return False
-
-
-
