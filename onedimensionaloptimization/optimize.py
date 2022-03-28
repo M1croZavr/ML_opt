@@ -68,7 +68,7 @@ def golden_section_search(fun_anl, x_l, x_r,
     else:
         print('Достигнуто максимальное количество итераций')
     res_f, res_x = fun.subs(var, (a + b) / 2), (a + b) / 2
-    print(f'f(x) = {res_f}, x = {res_x}')
+    print(f'f({str(var)}) = {res_f}, {str(var)} = {res_x}')
     if record_info:
         df.index.name = 'k'
         return res_f, res_x, df
@@ -129,7 +129,7 @@ def parabola_method(fun_anl, x_l, x_r,
     else:
         print('Достигнуто максимальное количество итераций')
     res_f, res_x = f_u, u[-1]
-    print(f'f(x) = {res_f}, x = {res_x}')
+    print(f'f({str(var)}) = {res_f}, {str(var)} = {res_x}')
     if record_info:
         df.index.name = 'k'
         return res_f, res_x, df
@@ -235,7 +235,7 @@ def brent_method(fun_anl, x_l, x_r,
     else:
         print('Достигнуто максимальное количество итераций')
     res_f, res_x = fun.subs(var, (a + b) / 2), (a + b) / 2
-    print(f'f(x) = {res_f}, x = {res_x}')
+    print(f'f({str(var)}) = {res_f}, {str(var)} = {res_x}')
     if record_info:
         df.index.name = 'k'
         return res_f, res_x, df
@@ -310,7 +310,7 @@ def bfgs(fun_anl, x0,
     else:
         print('Достигнуто максимальное количество итераций')
     res_f, res_x = lambda_fun(x), x
-    print(f'f(x) = {res_f}, x = {res_x}')
+    print(f'f({str(var)}) = {res_f}, {str(var)} = {res_x}')
     if record_info:
         df.index.name = 'k'
         return res_f, res_x, df
