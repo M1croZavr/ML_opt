@@ -1,15 +1,21 @@
 import sympy
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
 from twovarextremas import utils_twovarextremas
+from .plotting import plotter
+from twovarextremas import plotting_3d
+from onedimensionaloptimization import plotting
 from onedimensionaloptimization import optimize as one_optimization
 from sympy import lambdify, derive_by_array
 from scipy.optimize import fmin_cg
 
 
+__all__ = ['constant_descent', 'splitting_step_descent', 'steepest_descent', 'conjugate_gradients']
+
+
+@plotter(-10, 10, 40)
 def constant_descent(fun_anl, lr,
-                     eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False):
+                     eps=1e-5, max_iter=500, print_info=False, plot=False, record_info=False):
     """Optimizes function of n variables by gradient descent method with constant step.
 
     Positional arguments:
@@ -21,7 +27,7 @@ def constant_descent(fun_anl, lr,
     max_iter -- Maximum iteration of algorithm(default=500)
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
-    plot -- Draw plot(default=False)
+    plot -- Draw plot(default=False), plot is available if less than 3 variables in function
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
     variables = tuple(fun.atoms(sympy.Symbol))
@@ -55,8 +61,9 @@ def constant_descent(fun_anl, lr,
         return res_f, res_x
 
 
+@plotter(-10, 10, 40)
 def splitting_step_descent(fun_anl, lr, e, d,
-                           eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False):
+                           eps=1e-5, plot=False, max_iter=500, print_info=False, record_info=False):
     """Optimizes function of n variables by gradient descent method with splitting step.
 
     Positional arguments:
@@ -107,6 +114,7 @@ def splitting_step_descent(fun_anl, lr, e, d,
         return res_f, res_x
 
 
+@plotter(-10, 10, 40)
 def steepest_descent(fun_anl,
                      eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False):
     """Optimizes function of n variables by gradient descent method with solving one-dimensional optimization problem
@@ -158,8 +166,9 @@ def steepest_descent(fun_anl,
         return res_f, res_x
 
 
+@plotter(-10, 10, 40)
 def conjugate_gradients(fun_anl,
-                        eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False):
+                        eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False,):
     """Optimizes function of n variables by conjugate gradients method.
 
     Positional arguments:
@@ -170,7 +179,6 @@ def conjugate_gradients(fun_anl,
     max_iter -- Maximum iteration of algorithm(default=500)
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
-    plot -- Draw plot(default=False)
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
     variables = tuple(fun.atoms(sympy.Symbol))

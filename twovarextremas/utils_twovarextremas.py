@@ -41,7 +41,7 @@ def check_constraints(init_points, constr, vars_):
     return m_points
 
 
-def create_xyz(left, right, step, constr, fun, var1='x', var2='x'):
+def create_xyz(left, right, step, constr, fun, var1='x', var2='y'):
     """Return X, Y, Z arrays created with meshgrid and with applied function.
 
     Positional arguments:

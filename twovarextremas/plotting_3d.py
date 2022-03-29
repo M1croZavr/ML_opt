@@ -12,8 +12,8 @@ def make_3d_plot(X, Y, Z, m_points, var1, var2, fun):
                    c='black',
                    s=40,
                    label=f'Extrema{i}')
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
+    ax.set_xlabel(str(var1))
+    ax.set_ylabel(str(var2))
     ax.set_zlabel('Z')
     ax.plot_surface(X, Y, Z, cmap=cm.winter, alpha=0.5)
     if m_points:
@@ -57,8 +57,8 @@ def make_level_lines_plot(X, Y, Z, m_points, var1, var2, Z_c=None):
     plt.colorbar()
     if not(Z_c is None):
         plt.contour(X, Y, Z_c, 0)
-    plt.xlabel('X')
-    plt.ylabel('Y')
+    plt.xlabel(str(var1))
+    plt.ylabel(str(var2))
     if m_points:
         plt.legend()
     plt.title('Level lines and extrema points')
