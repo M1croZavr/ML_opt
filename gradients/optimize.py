@@ -15,7 +15,7 @@ __all__ = ['constant_descent', 'splitting_step_descent', 'steepest_descent', 'co
 
 @plotter(-10, 10, 40)
 def constant_descent(fun_anl, lr,
-                     eps=1e-5, max_iter=500, print_info=False, plot=False, record_info=False):
+                     eps=1e-5, max_iter=500, print_info=False, plot=False, record_info=False, x_init=None):
     """Optimizes function of n variables by gradient descent method with constant step.
 
     Positional arguments:
@@ -28,11 +28,16 @@ def constant_descent(fun_anl, lr,
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
     plot -- Draw plot(default=False), plot is available if less than 3 variables in function
+    x_init -- Initial x vector(default=None), leave None to initialize by ones
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
     variables = tuple(fun.atoms(sympy.Symbol))
     fun_grad = lambdify(variables, derive_by_array(fun, variables))
-    x_i = np.ones((len(variables), ))
+    if x_init is None:
+        x_i = np.ones((len(variables), ))
+    else:
+        x_i = np.array(x_init)
+        assert len(x_i) == len(variables), 'Initial x vector does not match number of variables in function'
     x_i_1 = None
     if record_info:
         df = pd.DataFrame(columns=variables)
@@ -63,7 +68,7 @@ def constant_descent(fun_anl, lr,
 
 @plotter(-10, 10, 40)
 def splitting_step_descent(fun_anl, lr, e, d,
-                           eps=1e-5, plot=False, max_iter=500, print_info=False, record_info=False):
+                           eps=1e-5, plot=False, max_iter=500, print_info=False, record_info=False, x_init=None):
     """Optimizes function of n variables by gradient descent method with splitting step.
 
     Positional arguments:
@@ -78,11 +83,16 @@ def splitting_step_descent(fun_anl, lr, e, d,
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
     plot -- Draw plot(default=False)
+    x_init -- Initial x vector(default=None), leave None to initialize by ones
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
     variables = tuple(fun.atoms(sympy.Symbol))
     fun_grad = lambdify(variables, derive_by_array(fun, variables))
-    x_i = np.ones((len(variables), ))
+    if x_init is None:
+        x_i = np.ones((len(variables), ))
+    else:
+        x_i = np.array(x_init)
+        assert len(x_i) == len(variables), 'Initial x vector does not match number of variables in function'
     x_i_1 = None
     if record_info:
         df = pd.DataFrame(columns=variables)
@@ -116,7 +126,7 @@ def splitting_step_descent(fun_anl, lr, e, d,
 
 @plotter(-10, 10, 40)
 def steepest_descent(fun_anl,
-                     eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False):
+                     eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False, x_init=None):
     """Optimizes function of n variables by gradient descent method with solving one-dimensional optimization problem
      each iteration to figure out suitable learning rate.
 
@@ -129,11 +139,16 @@ def steepest_descent(fun_anl,
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
     plot -- Draw plot(default=False)
+    x_init -- Initial x vector(default=None), leave None to initialize by ones
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
     variables = tuple(fun.atoms(sympy.Symbol))
     fun_grad = lambdify(variables, derive_by_array(fun, variables))
-    x_i = np.ones((len(variables), ))
+    if x_init is None:
+        x_i = np.ones((len(variables), ))
+    else:
+        x_i = np.array(x_init)
+        assert len(x_i) == len(variables), 'Initial x vector does not match number of variables in function'
     x_i_1 = None
     lm = sympy.Symbol('l')
     if record_info:
@@ -168,7 +183,7 @@ def steepest_descent(fun_anl,
 
 @plotter(-10, 10, 40)
 def conjugate_gradients(fun_anl,
-                        eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False,):
+                        eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False, x_init=None):
     """Optimizes function of n variables by conjugate gradients method.
 
     Positional arguments:
@@ -179,11 +194,16 @@ def conjugate_gradients(fun_anl,
     max_iter -- Maximum iteration of algorithm(default=500)
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
+    x_init -- Initial x vector(default=None), leave None to initialize by ones
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
     variables = tuple(fun.atoms(sympy.Symbol))
     fun_grad = lambdify(variables, derive_by_array(fun, variables))
-    x_i = np.ones((len(variables), ))
+    if x_init is None:
+        x_i = np.ones((len(variables), ))
+    else:
+        x_i = np.array(x_init)
+        assert len(x_i) == len(variables), 'Initial x vector does not match number of variables in function'
 
     def f(x, *args):
         fun, variables, _ = args

@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt, cm
+import numpy as np
 
 
 def make_3d_plot(X, Y, Z, m_points, var1, var2, fun):
@@ -62,4 +63,31 @@ def make_level_lines_plot(X, Y, Z, m_points, var1, var2, Z_c=None):
     if m_points:
         plt.legend()
     plt.title('Level lines and extrema points')
+    plt.show()
+
+
+def regression_3d(data, targets, x1_mesh, x2_mesh, y_mesh):
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(18, 9))
+    ax.scatter(data[:, 0], data[:, 1], targets, s=6, c='blue', label='Data samples')
+    # x_mesh, y_mesh = np.meshgrid(np.linspace(min(data[:, 0]), max(data[:, 0]), 25),
+    #                              np.linspace(min(data[:, 1]), max(data[:, 1]), 25))
+    # z_mesh = np.array([[w[0] + w[1] * x + w[2] * y for x, y in zip(x_i, y_i)] for x_i, y_i in zip(x_mesh, y_mesh)])
+    ax.set_title('Data samples and regression plane')
+    ax.plot_surface(x1_mesh, x2_mesh, y_mesh, cmap=cm.winter, alpha=0.5)
+    ax.legend()
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.set_zlabel('y')
+    plt.show()
+
+
+def regression_2d(data, targets, x1, y):
+    plt.figure(figsize=(18, 9))
+    plt.scatter(data[:, 0], targets, s=6, c='blue', label='Data samples')
+    # lin = np.linspace(min(data[:, 0]), max(data[:, 0]), 50)
+    plt.plot(x1, y, c='teal', label='Regression line')
+    plt.xlabel('x1')
+    plt.ylabel('y')
+    plt.title('Data samples and regression line')
+    plt.legend()
     plt.show()

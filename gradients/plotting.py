@@ -22,7 +22,8 @@ def plotter(left, right, n_points=100):
                 plot_flag = args[4]
             else:
                 plot_flag = False
-            fun = utils_twovarextremas.preproc_fun(args[0])
+            fun = utils_twovarextremas.preproc_fun(args[0]) if args \
+                                                            else utils_twovarextremas.preproc_fun(kwargs['fun_anl'])
             variables = tuple(fun.atoms(sympy.Symbol))
             if plot_flag and len(variables) == 2:
                 X, Y = np.meshgrid(np.linspace(left, right, n_points), np.linspace(left, right, n_points))
