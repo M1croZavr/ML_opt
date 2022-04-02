@@ -36,7 +36,7 @@ def plotter(left, right, n_points=100):
                 X = np.linspace(left, right, n_points)
                 Y = np.array([float(fun.subs(variables[0], x)) for x in X])
                 plotting.plot_scatter_and_line(X, Y, list(res[1].values()), [res[0]], [str(variables[0])])
-            else:
+            elif plot_flag and len(variables) > 2:
                 print('Cannot draw plot for this function.')
             return res
         return wrapper

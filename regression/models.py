@@ -21,7 +21,7 @@ class LinearRegression:
     eps -- float, default=0.05
         Convergence condition coefficient in SGD
     c -- float, default=0.01
-        Regularization coefficient if regularization provided
+        Regularization coefficient if regularization is provided
     plot -- bool, default=False
         Draw result plot or no
 
@@ -30,7 +30,7 @@ class LinearRegression:
     w -- array, weights of features found by SGD
     ...
     """
-    def __init__(self, reg=None, lr=0.01, eps=0.05, c=0.01, plot=False):
+    def __init__(self, reg=None, lr=0.01, eps=0.005, c=0.01, plot=False):
         self.reg = reg
         self.eps = eps
         self.c = c
@@ -83,6 +83,7 @@ class LinearRegression:
                 lin = np.linspace(min(X[:, 1]), max(X[:, 1]), 50)
                 y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
                 plotting_3d.regression_2d(X[:, 1:], y, lin, y_lin)
+
         return self
 
     def predict(self, X):
@@ -134,13 +135,14 @@ class PolynomialRegression:
     ----------
     w -- array, weights of features found by SGD
     poly_transformer -- sklearn.preprocessing._polynomial.PolynomialFeatures, Polynomial features generator
+    normalizer -- sklearn.preprocessing._polynomial.StandardScaler, Scaling features
     """
-    def __init__(self, reg=None, degree=1, lr=0.01, eps=0.05, c=0.01, plot=False):
+    def __init__(self, reg=None, degree=1, lr=0.01, eps=0.005, c=0.01, plot=False):
         self.reg = reg
         self.degree = degree
+        self.lr = lr
         self.eps = eps
         self.c = c
-        self.lr = lr
         self.plot = plot
         self.w = None
         self.poly_transformer = preprocessing.PolynomialFeatures(degree=self.degree)
@@ -148,7 +150,7 @@ class PolynomialRegression:
 
     def fit(self, X, y):
         """
-        Fits linear regression model with specified regularization by stochastic gradient descent.
+        Fits polynomial regression model with specified regularization by stochastic gradient descent.
 
         Parameters
         ----------
@@ -160,11 +162,10 @@ class PolynomialRegression:
         self -- object, fitted model
         """
         X_poly = self.poly_transformer.fit_transform(X)
-        X_poly = self.normalizer.fit_transform(X_poly)
-        X_poly = np.hstack((np.ones((X_poly.shape[0], 1)), X_poly))
+        X_poly = np.hstack((X_poly[:, 0].reshape(-1, 1), self.normalizer.fit_transform(X_poly[:, 1:])))
         y_poly = y.copy()
         indices = np.arange(X_poly.shape[0])
-        self.w = np.zeros((X_poly.shape[1], ))
+        self.w = np.ones((X_poly.shape[1], ))
         w_old = None
         while (w_old is None) or (np.sum(np.sqrt((self.w - w_old) ** 2)) > self.eps):
             np.random.shuffle(indices)
@@ -173,13 +174,15 @@ class PolynomialRegression:
             w_old = self.w
             for i in range(X_poly.shape[0]):
                 if self.reg is None:
-                    self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j] for j in range(len(self.w))])
+                    self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j]
+                                                  for j in range(len(self.w))])
                 elif self.reg == 'l2':
                     self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j] + self.c * self.w[j]
                                                   for j in range(len(self.w))])
                 elif self.reg == 'l1':
                     self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j] + self.c * uo.sign(self.w[j])
                                                   for j in range(len(self.w))])
+
         if self.plot:
             if X.shape[1] > 2:
                 print('Cannot draw a plot with dimension > 2')
@@ -193,6 +196,7 @@ class PolynomialRegression:
                 lin = np.linspace(min(X[:, 0]), max(X[:, 0]), 50)
                 y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
                 plotting_3d.regression_2d(X, y, lin, y_lin)
+
         return self
 
     def predict(self, X):
@@ -208,8 +212,7 @@ class PolynomialRegression:
         y -- array, array of predictions of regression model
         """
         X = self.poly_transformer.transform(X)
-        X = self.normalizer.transform(X)
-        X = np.hstack((np.ones((X.shape[0], 1)), X))
+        X = np.hstack((X[:, 0].reshape(-1, 1), self.normalizer.transform(X[:, 1:])))
         return np.sum(self.w * X, axis=1)
 
     def __str__(self):
