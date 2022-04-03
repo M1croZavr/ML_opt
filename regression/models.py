@@ -134,7 +134,7 @@ class PolynomialRegression:
     Attributes
     ----------
     w -- array, weights of features found by SGD
-    poly_transformer -- sklearn.preprocessing._polynomial.PolynomialFeatures, Polynomial features generator
+    poly_transformer -- sklearn.preprocessing._polynomial.PolynomialFeatures, Polynomial features' generator
     normalizer -- sklearn.preprocessing._polynomial.StandardScaler, Scaling features
     """
     def __init__(self, reg=None, degree=1, lr=0.01, eps=0.005, c=0.01, plot=False):
@@ -234,8 +234,6 @@ class ExpRegression:
     ----------
     reg -- str, default=None
         Regularization l1, l2, student or None to make regression without regularization
-    degree -- int, default=1
-        Defines maximum degree of generating polynomial features
     lr -- float, default=0.01
         Learning rate in SGD
     eps -- float, default=0.05
@@ -250,9 +248,8 @@ class ExpRegression:
     w -- array, weights of features found by SGD
     poly_transformer -- sklearn.preprocessing._polynomial.PolynomialFeatures, Polynomial features generator
     """
-    def __init__(self, reg=None, degree=1, lr=0.01, eps=0.05, c=0.01, plot=False):
+    def __init__(self, reg=None, lr=0.01, eps=0.05, c=0.01, plot=False):
         self.reg = reg
-        self.degree = degree
         self.eps = eps
         self.c = c
         self.lr = lr
@@ -274,23 +271,28 @@ class ExpRegression:
         """
         X = np.hstack((np.ones((X.shape[0], 1)), X))
         y = np.log(y.copy())
-        indices = np.arange(X.shape[0])
-        self.w = np.zeros((X.shape[1], ))
-        w_old = None
-        while (w_old is None) or (np.sum(np.sqrt((self.w - w_old) ** 2)) > self.eps):
-            np.random.shuffle(indices)
-            X = X[indices]
-            y = y[indices]
-            w_old = self.w
-            for i in range(X.shape[0]):
-                if self.reg is None:
-                    self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] for j in range(len(self.w))])
-                elif self.reg == 'l2':
-                    self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] + self.c * self.w[j]
-                                                  for j in range(len(self.w))])
-                elif self.reg == 'l1':
-                    self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] + self.c * uo.sign(self.w[j])
-                                                  for j in range(len(self.w))])
+        if self.reg is None:
+            self.w = (np.linalg.inv(X.T @ X) @ X.T @ y.reshape(-1, 1)).flatten()
+        elif self.reg in ('l2', 'l1'):
+            reg_matrix = self.c * np.diag(np.array([0] + [1 for _ in range(X.shape[1] - 1)]))
+            self.w = (np.linalg.inv(X.T @ X + reg_matrix) @ X.T @ y.reshape(-1, 1)).flatten()
+        else:
+            print('No such regularization')
+            return None
+        if self.plot:
+            if X.shape[1] > 3:
+                print('Cannot draw a plot with dimension > 2')
+            elif X.shape[1] == 3:
+                x1_mesh, x2_mesh = np.meshgrid(np.linspace(min(X[:, 1]), max(X[:, 1]), 25),
+                                               np.linspace(min(X[:, 2]), max(X[:, 2]), 25))
+                y_mesh = np.array([[self.predict(np.array([[xx1, xx2]]))[0] for xx1, xx2 in zip(x1_i, x2_i)]
+                                   for x1_i, x2_i in zip(x1_mesh, x2_mesh)])
+                plotting_3d.regression_3d(X[:, 1:], np.exp(y), x1_mesh, x2_mesh, y_mesh)
+            elif X.shape[1] == 2:
+                lin = np.linspace(min(X[:, 1]), max(X[:, 1]), 50)
+                y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
+                plotting_3d.regression_2d(X[:, 1:], np.exp(y), lin, y_lin)
+
         return self
 
     def predict(self, X):
@@ -306,7 +308,7 @@ class ExpRegression:
         y -- array, array of predictions of regression model
         """
         X = np.hstack((np.ones((X.shape[0], 1)), X))
-        return np.sum(np.exp(self.w) ** X, axis=1)
+        return np.exp(np.sum(self.w * X, axis=1))
 
     def __str__(self):
         if not(self.w is None):
