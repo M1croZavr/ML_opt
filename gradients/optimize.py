@@ -1,4 +1,5 @@
 import sympy
+from sympy import *
 import pandas as pd
 import numpy as np
 from twovarextremas import utils_twovarextremas
@@ -126,7 +127,8 @@ def splitting_step_descent(fun_anl, lr, e, d,
 
 @plotter(-10, 10, 40)
 def steepest_descent(fun_anl,
-                     eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False, x_init=None):
+                     eps=1e-5, max_iter=500, print_info=False, record_info=False, plot=False, x_init=None,
+                     lr_finder='golden_search'):
     """Optimizes function of n variables by gradient descent method with solving one-dimensional optimization problem
      each iteration to figure out suitable learning rate.
 
@@ -140,6 +142,7 @@ def steepest_descent(fun_anl,
     record_info -- Make pd.DataFrame with recorder information(default=False)
     plot -- Draw plot(default=False)
     x_init -- Initial x vector(default=None), leave None to initialize by ones
+    lr_fined -- One dimensional optimization solver(parabolic, brent, golden_search)(default=golden_search)
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
     variables = tuple(fun.atoms(sympy.Symbol))
@@ -156,8 +159,18 @@ def steepest_descent(fun_anl,
     else:
         df = None
     for i in range(max_iter):
-        _, lr = one_optimization.brent_method(str(fun.subs(dict(zip(variables, x_i - lm * np.array(fun_grad(*x_i)))))),
-                                              0, 1)
+        if np.all(np.array(fun_grad(*x_i)) == 0):
+            print('Градиент вышел на плато')
+            break
+        if lr_finder == 'golden_search':
+            _, lr = one_optimization.golden_section_search(str(fun.subs(dict(zip(variables, x_i - lm * np.array(fun_grad(*x_i)))))),
+                                                           0, 1)
+        elif lr_finer == 'parabolic':
+            _, lr = one_optimization.parabola_method(str(fun.subs(dict(zip(variables, x_i - lm * np.array(fun_grad(*x_i)))))),
+                                                     0, 1)
+        elif lr_finder == 'brent':
+            _, lr = one_optimization.brent_method(str(fun.subs(dict(zip(variables, x_i - lm * np.array(fun_grad(*x_i)))))),
+                                                  0, 1)
         lr = float(lr)
         x_i_1 = x_i - lr * np.array(fun_grad(*x_i))
         if print_info:
