@@ -27,8 +27,8 @@ def constant_descent(fun_anl, lr,
     eps -- float or int. Precision of result(default=1e-5)
     max_iter -- Maximum iteration of algorithm(default=500)
     print_info -- Print information each iteration(default=False)
-    record_info -- Make pd.DataFrame with recorder information(default=False)
     plot -- Draw plot(default=False), plot is available if less than 3 variables in function
+    record_info -- Make pd.DataFrame with recorder information(default=False)
     x_init -- Initial x vector(default=None), leave None to initialize by ones
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
@@ -80,10 +80,10 @@ def splitting_step_descent(fun_anl, lr, e, d,
 
     Keyword arguments:
     eps -- float or int. Precision of result(default=1e-5)
+    plot -- Draw plot(default=False)
     max_iter -- Maximum iteration of algorithm(default=500)
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
-    plot -- Draw plot(default=False)
     x_init -- Initial x vector(default=None), leave None to initialize by ones
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
@@ -207,6 +207,7 @@ def conjugate_gradients(fun_anl,
     max_iter -- Maximum iteration of algorithm(default=500)
     print_info -- Print information each iteration(default=False)
     record_info -- Make pd.DataFrame with recorder information(default=False)
+    plot -- Draw plot(default=False)
     x_init -- Initial x vector(default=None), leave None to initialize by ones
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
