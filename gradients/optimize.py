@@ -4,8 +4,6 @@ import pandas as pd
 import numpy as np
 from twovarextremas import utils_twovarextremas
 from .plotting import plotter
-from twovarextremas import plotting_3d
-from onedimensionaloptimization import plotting
 from onedimensionaloptimization import optimize as one_optimization
 from sympy import lambdify, derive_by_array
 from scipy.optimize import fmin_cg
