@@ -163,7 +163,7 @@ def steepest_descent(fun_anl,
         if lr_finder == 'golden_search':
             _, lr = one_optimization.golden_section_search(str(fun.subs(dict(zip(variables, x_i - lm * np.array(fun_grad(*x_i)))))),
                                                            0, 1)
-        elif lr_finer == 'parabolic':
+        elif lr_finder == 'parabolic':
             _, lr = one_optimization.parabola_method(str(fun.subs(dict(zip(variables, x_i - lm * np.array(fun_grad(*x_i)))))),
                                                      0, 1)
         elif lr_finder == 'brent':
