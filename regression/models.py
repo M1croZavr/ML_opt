@@ -71,20 +71,22 @@ class LinearRegression:
                     self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] + self.c * uo.sign(self.w[j])
                                                   for j in range(len(self.w))])
         if self.plot:
-            if X.shape[1] > 3:
-                print('Cannot draw a plot with dimension > 2')
-            elif X.shape[1] == 3:
-                x1_mesh, x2_mesh = np.meshgrid(np.linspace(min(X[:, 1]), max(X[:, 1]), 25),
-                                               np.linspace(min(X[:, 2]), max(X[:, 2]), 25))
-                y_mesh = np.array([[self.predict(np.array([[xx1, xx2]]))[0] for xx1, xx2 in zip(x1_i, x2_i)]
-                                   for x1_i, x2_i in zip(x1_mesh, x2_mesh)])
-                plotting_3d.regression_3d(X[:, 1:], y, x1_mesh, x2_mesh, y_mesh)
-            elif X.shape[1] == 2:
-                lin = np.linspace(min(X[:, 1]), max(X[:, 1]), 50)
-                y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
-                plotting_3d.regression_2d(X[:, 1:], y, lin, y_lin)
-
+            self.make_plot(X, y)
         return self
+
+    def make_plot(self, X, y):
+        if X.shape[1] > 3:
+            print('Cannot draw a plot with dimension > 2')
+        elif X.shape[1] == 3:
+            x1_mesh, x2_mesh = np.meshgrid(np.linspace(min(X[:, 1]), max(X[:, 1]), 25),
+                                           np.linspace(min(X[:, 2]), max(X[:, 2]), 25))
+            y_mesh = np.array([[self.predict(np.array([[xx1, xx2]]))[0] for xx1, xx2 in zip(x1_i, x2_i)]
+                               for x1_i, x2_i in zip(x1_mesh, x2_mesh)])
+            plotting_3d.regression_3d(X[:, 1:], y, x1_mesh, x2_mesh, y_mesh)
+        elif X.shape[1] == 2:
+            lin = np.linspace(min(X[:, 1]), max(X[:, 1]), 50)
+            y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
+            plotting_3d.regression_2d(X[:, 1:], y, lin, y_lin)
 
     def predict(self, X):
         """
@@ -135,7 +137,7 @@ class PolynomialRegression:
     ----------
     w -- array, weights of features found by SGD
     poly_transformer -- sklearn.preprocessing._polynomial.PolynomialFeatures, Polynomial features' generator
-    normalizer -- sklearn.preprocessing._polynomial.StandardScaler, Scaling features
+    normalizer -- sklearn.preprocessing._polynomial.StandardScaler, Scaling feature wise data
     """
     def __init__(self, reg=None, degree=1, lr=0.01, eps=0.005, c=0.01, plot=False):
         self.reg = reg
@@ -182,22 +184,23 @@ class PolynomialRegression:
                 elif self.reg == 'l1':
                     self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j] + self.c * uo.sign(self.w[j])
                                                   for j in range(len(self.w))])
-
         if self.plot:
-            if X.shape[1] > 2:
-                print('Cannot draw a plot with dimension > 2')
-            elif X.shape[1] == 2:
-                x1_mesh, x2_mesh = np.meshgrid(np.linspace(min(X[:, 0]), max(X[:, 0]), 25),
-                                               np.linspace(min(X[:, 1]), max(X[:, 1]), 25))
-                y_mesh = np.array([[self.predict(np.array([[xx1, xx2]]))[0] for xx1, xx2 in zip(x1_i, x2_i)]
-                                   for x1_i, x2_i in zip(x1_mesh, x2_mesh)])
-                plotting_3d.regression_3d(X, y, x1_mesh, x2_mesh, y_mesh)
-            elif X.shape[1] == 1:
-                lin = np.linspace(min(X[:, 0]), max(X[:, 0]), 50)
-                y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
-                plotting_3d.regression_2d(X, y, lin, y_lin)
-
+            self.make_plot(X, y)
         return self
+
+    def make_plot(self, X, y):
+        if X.shape[1] > 2:
+            print('Cannot draw a plot with dimension > 2')
+        elif X.shape[1] == 2:
+            x1_mesh, x2_mesh = np.meshgrid(np.linspace(min(X[:, 0]), max(X[:, 0]), 25),
+                                           np.linspace(min(X[:, 1]), max(X[:, 1]), 25))
+            y_mesh = np.array([[self.predict(np.array([[xx1, xx2]]))[0] for xx1, xx2 in zip(x1_i, x2_i)]
+                               for x1_i, x2_i in zip(x1_mesh, x2_mesh)])
+            plotting_3d.regression_3d(X, y, x1_mesh, x2_mesh, y_mesh)
+        elif X.shape[1] == 1:
+            lin = np.linspace(min(X[:, 0]), max(X[:, 0]), 50)
+            y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
+            plotting_3d.regression_2d(X, y, lin, y_lin)
 
     def predict(self, X):
         """
@@ -226,7 +229,7 @@ class ExpRegression:
     """
     Least squares exponential regression with l1, l2, student regularization
 
-    ExpRegression fits a polynomial model with coefficients w = (w1, ..., wp)
+    ExpRegression fits an exponential model with coefficients w = (w1, ..., wp)
     to minimize the residual sum of squares between the observed targets in
     the dataset, and the targets predicted by the linear approximation.
 
@@ -246,7 +249,6 @@ class ExpRegression:
     Attributes
     ----------
     w -- array, weights of features found by SGD
-    poly_transformer -- sklearn.preprocessing._polynomial.PolynomialFeatures, Polynomial features generator
     """
     def __init__(self, reg=None, lr=0.01, eps=0.05, c=0.01, plot=False):
         self.reg = reg
@@ -258,7 +260,7 @@ class ExpRegression:
 
     def fit(self, X, y):
         """
-        Fits linear regression model with specified regularization by stochastic gradient descent.
+        Fits exponential regression model with specified regularization by stochastic gradient descent.
 
         Parameters
         ----------
@@ -275,25 +277,28 @@ class ExpRegression:
             self.w = (np.linalg.inv(X.T @ X) @ X.T @ y.reshape(-1, 1)).flatten()
         elif self.reg in ('l2', 'l1'):
             reg_matrix = self.c * np.diag(np.array([0] + [1 for _ in range(X.shape[1] - 1)]))
+            # Посичтать градиенты с экспонентой
             self.w = (np.linalg.inv(X.T @ X + reg_matrix) @ X.T @ y.reshape(-1, 1)).flatten()
         else:
             print('No such regularization')
             return None
         if self.plot:
-            if X.shape[1] > 3:
-                print('Cannot draw a plot with dimension > 2')
-            elif X.shape[1] == 3:
-                x1_mesh, x2_mesh = np.meshgrid(np.linspace(min(X[:, 1]), max(X[:, 1]), 25),
-                                               np.linspace(min(X[:, 2]), max(X[:, 2]), 25))
-                y_mesh = np.array([[self.predict(np.array([[xx1, xx2]]))[0] for xx1, xx2 in zip(x1_i, x2_i)]
-                                   for x1_i, x2_i in zip(x1_mesh, x2_mesh)])
-                plotting_3d.regression_3d(X[:, 1:], np.exp(y), x1_mesh, x2_mesh, y_mesh)
-            elif X.shape[1] == 2:
-                lin = np.linspace(min(X[:, 1]), max(X[:, 1]), 50)
-                y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
-                plotting_3d.regression_2d(X[:, 1:], np.exp(y), lin, y_lin)
-
+            self.make_plot(X, y)
         return self
+
+    def make_plot(self, X, y):
+        if X.shape[1] > 3:
+            print('Cannot draw a plot with dimension > 2')
+        elif X.shape[1] == 3:
+            x1_mesh, x2_mesh = np.meshgrid(np.linspace(min(X[:, 1]), max(X[:, 1]), 25),
+                                           np.linspace(min(X[:, 2]), max(X[:, 2]), 25))
+            y_mesh = np.array([[self.predict(np.array([[xx1, xx2]]))[0] for xx1, xx2 in zip(x1_i, x2_i)]
+                               for x1_i, x2_i in zip(x1_mesh, x2_mesh)])
+            plotting_3d.regression_3d(X[:, 1:], np.exp(y), x1_mesh, x2_mesh, y_mesh)
+        elif X.shape[1] == 2:
+            lin = np.linspace(min(X[:, 1]), max(X[:, 1]), 50)
+            y_lin = np.array([self.predict(np.array([[x]]))[0] for x in lin])
+            plotting_3d.regression_2d(X[:, 1:], np.exp(y), lin, y_lin)
 
     def predict(self, X):
         """
@@ -312,6 +317,7 @@ class ExpRegression:
 
     def __str__(self):
         if not(self.w is None):
-            return 'y = ' + ' * '.join([f'{np.exp(self.w[i])} ** x{i}' if i != 0 else f'{np.exp(self.w[i])}' for i in range(len(self.w))])
+            return 'y = ' + ' * '.join([f'{np.exp(self.w[i])} ** x{i}' if i != 0 else f'{np.exp(self.w[i])}'
+                                        for i in range(len(self.w))])
         else:
             return 'Fit model before calling __str__'
