@@ -65,10 +65,12 @@ class LinearRegression:
                 if self.reg is None:
                     self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] for j in range(len(self.w))])
                 elif self.reg == 'l2':
-                    self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] + self.c * self.w[j]
+                    self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] + self.c * self.w[j] if j != 0
+                                                  else (self.w.dot(X[i]) - y[i]) * X[i, j]
                                                   for j in range(len(self.w))])
                 elif self.reg == 'l1':
-                    self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] + self.c * uo.sign(self.w[j])
+                    self.w -= self.lr * np.array([(self.w.dot(X[i]) - y[i]) * X[i, j] + self.c * uo.sign(self.w[j]) if j != 0
+                                                  else (self.w.dot(X[i]) - y[i]) * X[i, j]
                                                   for j in range(len(self.w))])
         if self.plot:
             self.make_plot(X, y)
@@ -179,10 +181,12 @@ class PolynomialRegression:
                     self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j]
                                                   for j in range(len(self.w))])
                 elif self.reg == 'l2':
-                    self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j] + self.c * self.w[j]
+                    self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j] + self.c * self.w[j] if j != 0
+                                                  else (self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j]
                                                   for j in range(len(self.w))])
                 elif self.reg == 'l1':
-                    self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j] + self.c * uo.sign(self.w[j])
+                    self.w -= self.lr * np.array([(self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j] + self.c * uo.sign(self.w[j]) if j != 0
+                                                  else (self.w.dot(X_poly[i]) - y_poly[i]) * X_poly[i, j]
                                                   for j in range(len(self.w))])
         if self.plot:
             self.make_plot(X, y)
