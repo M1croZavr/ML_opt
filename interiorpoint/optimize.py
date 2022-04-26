@@ -92,19 +92,19 @@ def log_barriers(fun, g, x_init, t, tol_barrier=1e-5, tol_newton=1e-5, maxiter=2
     """
     x = x_init
     for i in range(len(g)):
-        if (('>=' in g[i]) or ('=' in g[i])) and (not('<=' in g[i])):
-            if '>=' in g[i]:
-                left, right = g[i].split('>=')
-            elif '=' in g[i]:
-                left, right = g[i].split('=')
+        if '>=' in g[i]:
+            # if '>=' in g[i]:
+            left, right = g[i].split('>=')
+            # elif '=' in g[i]:
+            #     left, right = g[i].split('=')
             g[i] = f'({left.strip()} - {right.strip()})'
         elif '<=' in g[i]:
             left, right = g[i].split('<=')
             g[i] = f'(-({left.strip()}) + {right.strip()})'
     # Пересчитываем гессиану с новым t
-    z = preproc_fun(f'{fun} + 1 / {t} * ln({"*".join(g)})')
+    z = preproc_fun(f'{fun} - (1 / {t}) * ln({"*".join(g)})')
     variables = list(z.atoms(sympy.Symbol))
-    grad = sympy.derive_by_array(z, variables)
+    grad = sympy.derive_by_array(z, variables)  # Градиенты считает правильно
     hess = sympy.hessian(z, variables)
     while len(g) / t > tol_barrier:
         i = 0
@@ -117,7 +117,7 @@ def log_barriers(fun, g, x_init, t, tol_barrier=1e-5, tol_newton=1e-5, maxiter=2
             i += 1
         # !!!!
         t = (1 + 1/(13 * np.sqrt(0.01))) * t
-        z = preproc_fun(f'{fun} + 1 / {t} * ln({"*".join(g)})')
+        z = preproc_fun(f'{fun} - (1 / {t}) * ln({"*".join(g)})')
         grad = sympy.derive_by_array(z, variables)
         hess = sympy.hessian(z, variables)
     return x, variables
