@@ -101,6 +101,7 @@ def log_barriers(fun, g, x_init, t=0.1, c=2., tol_barrier=1e-4, tol_newton=1e-4,
     plot -- bool, Draw plot(default=False)
     """
     x = x_init
+    g = g.copy()
     for i in range(len(g)):
         if '>=' in g[i]:
             # if '>=' in g[i]:
@@ -147,7 +148,7 @@ def log_barriers(fun, g, x_init, t=0.1, c=2., tol_barrier=1e-4, tol_newton=1e-4,
             for x in x_history:
                 points.append(dict(zip(variables, x)))
             draw_level_lines(X, Y, Z, points, variables)
-            X, Y = np.meshgrid(np.linspace(-10, 10, 250), np.linspace(-10, 10, 250))
+            X, Y = np.meshgrid(np.linspace(-10, 10, 500), np.linspace(-10, 10, 500))
             draw_feasible_polygon(X, Y, g, variables)
         elif len(variables) == 1:
             X = np.linspace(-10, 10)
@@ -174,11 +175,13 @@ def direct_dual_interior_point(fun, g, x_init, plot=True):
     plot -- Draw plot(default=False)
     """
     fun = preproc_fun(fun)
+    g = g.copy()
     variables = list(fun.atoms(sympy.Symbol))
     constraints = []
-    for g_i in g:
+    for i, g_i in enumerate(g):
         if '>=' in g_i:
             left, right = tuple(map(lambda x: x.strip(), g_i.split('>=')))
+            g_str = f'({left}) - ({right})'
 
             def constraint(x, left=left, right=right):
                 return sympy.lambdify(variables, preproc_fun(left) - preproc_fun(right))(*x)
@@ -187,6 +190,7 @@ def direct_dual_interior_point(fun, g, x_init, plot=True):
 
         elif '<=' in g_i:
             left, right = tuple(map(lambda x: x.strip(), g_i.split('<=')))
+            g_str = f'-({left}) + ({right})'
 
             def constraint(x, left=left, right=right):
                 return sympy.lambdify(variables, -1 * preproc_fun(left) + preproc_fun(right))(*x)
@@ -199,7 +203,7 @@ def direct_dual_interior_point(fun, g, x_init, plot=True):
                 return sympy.lambdify(variables, preproc_fun(left) - preproc_fun(right))(*x)
 
             constraints.append({'type': 'eq', 'fun': constraint})
-
+        g[i] = g_str
     f = sympy.lambdify(variables, fun)
 
     def callback(xk, state):
@@ -214,15 +218,15 @@ def direct_dual_interior_point(fun, g, x_init, plot=True):
 
     if plot:
         if len(variables) == 2:
-            X = np.linspace(-10, 10)
-            Y = np.linspace(-10, 10)
-            X, Y = np.meshgrid(X, Y)
+            X, Y = np.meshgrid(np.linspace(-10, 10, 25), np.linspace(-10, 10, 25))
             Z = np.array([[float(fun.subs([(variables[0], x), (variables[1], y)]))
                            for x, y in zip(x_i, y_i)] for x_i, y_i in zip(X, Y)])
             points = []
             for x in x_history:
                 points.append(dict(zip(variables, x)))
             draw_level_lines(X, Y, Z, points, variables)
+            X, Y = np.meshgrid(np.linspace(-10, 10, 500), np.linspace(-10, 10, 500))
+            draw_feasible_polygon(X, Y, g, variables)
         elif len(variables) == 1:
             X = np.linspace(-10, 10)
             Y = np.array([float(fun.subs(variables[0], x_i)) for x_i in X])
