@@ -1,7 +1,7 @@
 import numpy as np
 from onedimensionaloptimization import utils_onedimensionaloptimization as uo
 from twovarextremas import plotting_3d
-from sklearn import preprocessing, svm, pipeline
+from sklearn import preprocessing, svm, pipeline, linear_model
 from matplotlib import pyplot as plt, patches, lines
 
 
@@ -97,7 +97,7 @@ class LogisticRegressionRidge:
                              np.arange(x2_min, x2_max, grid_step))
         Z = self.predict(np.c_[xx.ravel(), yy.ravel()])
         Z = Z.reshape(xx.shape)
-        plt.contour(xx, yy, Z, colors='black')
+        plt.contour(xx, yy, Z, levels=[0.0001], colors='black')
         plt.show()
 
     def predict_proba(self, X):
@@ -232,7 +232,7 @@ class LogisticRegressionLasso:
                              np.arange(x2_min, x2_max, grid_step))
         Z = self.predict(np.c_[xx.ravel(), yy.ravel()])
         Z = Z.reshape(xx.shape)
-        plt.contour(xx, yy, Z, colors='black')
+        plt.contour(xx, yy, Z, levels=[0.0001], colors='black')
         plt.show()
 
     def predict_proba(self, X):
@@ -352,7 +352,7 @@ class SupportVectorClassifier:
                              np.arange(x2_min, x2_max, grid_step))
         Z = self.predict(np.c_[xx.ravel(), yy.ravel()])
         Z = Z.reshape(xx.shape)
-        plt.contour(xx, yy, Z, colors='black')
+        plt.contour(xx, yy, Z, levels=[0.0001], colors='black')
         plt.show()
 
     def predict(self, X):
@@ -461,7 +461,7 @@ class SupportVectorClassifierDual:
                              np.arange(x2_min, x2_max, grid_step))
         Z = self.predict(np.c_[xx.ravel(), yy.ravel()])
         Z = Z.reshape(xx.shape)
-        plt.contour(xx, yy, Z, colors='black')
+        plt.contour(xx, yy, Z, levels=[0.0001], colors='black')
         plt.show()
 
     def predict(self, X):
@@ -485,3 +485,121 @@ class SupportVectorClassifierDual:
         return 'y = ' + ' + '.join([f'{c}x{i}' if i != 0 else f'{c}'
                                     for i, c in enumerate(self.pipeline.named_steps['Estimator'].intercept_
                                                           + self.pipeline.named_steps['Estimator'].coef_[0])])
+
+
+class LogisticRegressionRBF:
+    """
+    Logistic regression with RBF kernel and regularization by coefficient C(inverse of lambda, reg term = 1 / C)
+
+    LogisticRegression fits a rbf model with sigmoid function coefficients w = (w1, ..., wp)
+    to minimize the log loss between the observed targets in the dataset.
+
+    Parameters
+    ----------
+    eps -- float, default=0.00001
+        Convergence condition coefficient in SGD
+    C -- float, default=1
+        Inverse of regularization coefficient
+    gamma -- float, default=0.1
+        rbf hyperparameter for exp(-gamma||x - l||^2)
+    plot -- bool, default=False
+        Draw result plot or not
+
+    Attributes
+    ----------
+    model -- logistic regression model.
+    ...
+    """
+    def __init__(self, eps=0.00001, C=1, gamma=0.1, plot=False):
+        self.eps = eps
+        self.C = C
+        self.gamma = gamma
+        self.plot = plot
+        self.X = None
+        self.model = linear_model.LogisticRegression(C=self.C, tol=self.eps)
+
+    def __make_rbf_features(self, X):
+        def rbf_similarity(landmark, x_i):
+            return np.exp(-self.gamma * np.sqrt(np.sum((x_i - landmark) ** 2)) ** 2)
+        new_X = np.zeros((X.shape[0], self.X.shape[0]))
+        for i, l in enumerate(self.X):
+            new_column = [rbf_similarity(l, x_i) for x_i in X]
+            new_X[:, i] = np.array(new_column)
+        return new_X
+
+    def fit(self, X, y):
+        """
+        Fits logistic regression model.
+
+        Parameters
+        ----------
+        X -- numpy ndarray, features data 2d array
+        y -- numpy ndarray, targets data
+
+        Returns
+        -------
+        self -- object, fitted model
+        """
+        self.X = X.copy()
+        X = self.__make_rbf_features(X)
+
+        self.model.fit(X, y)
+        if self.plot:
+            self.make_plot(self.X[:, :2], y)
+        return self
+
+    def make_plot(self, X, y, grid_step=.1):
+        plt.figure(figsize=(14, 9))
+        plt.scatter(X[y == 1, 0], X[y == 1, 1], c='green', marker='+', label='class 1')
+        plt.scatter(X[y == 0, 0], X[y == 0, 1], c='red', marker='D', label='class 0')
+        plt.xlabel("Feature 1")
+        plt.ylabel("Feature 2")
+        plt.title('Classification decision plane')
+        legend_elements = [patches.Patch(facecolor='green', edgecolor='green', label='Class 1'),
+                           patches.Patch(facecolor='red', edgecolor='red', label='Class 2'),
+                           patches.Patch(facecolor='black', edgecolor='black', label='Separating plane')]
+        plt.legend(handles=legend_elements)
+        x1_min, x1_max = X[:, 0].min() - .1, X[:, 0].max() + .1
+        x2_min, x2_max = X[:, 1].min() - .1, X[:, 1].max() + .1
+        xx, yy = np.meshgrid(np.arange(x1_min, x1_max, grid_step),
+                             np.arange(x2_min, x2_max, grid_step))
+        Z = self.predict(np.c_[xx.ravel(), yy.ravel()])
+        Z = Z.reshape(xx.shape)
+        plt.contour(xx, yy, Z, levels=[0.0001], colors='black')
+        plt.show()
+
+    def predict_proba(self, X):
+        """
+        Makes probability predictions for X features array.
+
+        Parameters
+        ----------
+        X -- array, features data 2d array
+
+        Returns
+        -------
+        y -- array, array of predictions of regression model
+        """
+        X = self.__make_rbf_features(X)
+        return self.model.predict_proba(X)
+
+    def predict(self, X):
+        """
+        Makes predictions for X features array.
+
+        Parameters
+        ----------
+        X -- array, features data 2d array
+        threshold -- float, threshold for probability(default=0.5)
+
+        Returns
+        -------
+        y -- array, array of predictions of regression model
+        """
+        X = self.__make_rbf_features(X)
+        return self.model.predict(X)
+
+    def __str__(self):
+        return 'y = ' + ' + '.join([f'{c}x{i}' if i != 0 else f'{c}'
+                                    for i, c in enumerate(self.model.intercept_
+                                                          + self.model.coef_[0])])
