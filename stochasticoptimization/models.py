@@ -1,9 +1,11 @@
 from sklearn import pipeline, preprocessing
 import numpy as np
 from matplotlib import pyplot as plt, patches, lines
+from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.inspection import DecisionBoundaryDisplay
 
 
-class StochasticSVM:
+class StochasticSVM(BaseEstimator, ClassifierMixin):
     """
     Support vector classifier optimized by Stochastic Gradient Descent
 
@@ -37,6 +39,8 @@ class StochasticSVM:
         self.eps = eps
         self.plot = plot
         self.w = None
+        self.X_ = None
+        self.y_ = None
 
     def fit(self, X, y):
         """
@@ -51,6 +55,8 @@ class StochasticSVM:
         -------
         self -- object, fitted model
         """
+        self.X_ = X
+        self.y_ = y
         X = self.pipeline.fit_transform(X)
         X = np.hstack((np.ones((X.shape[0], 1)), X))
         indices = np.arange(X.shape[0])
@@ -69,10 +75,10 @@ class StochasticSVM:
                     self.w -= self.lr * np.array([self.w[j] - self.C * X_shuffled[i, j] * t_i
                                                   for j in range(len(self.w))])
         if self.plot:
-            self.make_plot(X[:, 1:3], y)
+            self.make_plot()
         return self
 
-    def make_plot(self, X, y, grid_step=.01):
+    def make_plot(self):
         """
         Make plot for binary classification.
 
@@ -86,23 +92,21 @@ class StochasticSVM:
         -------
         None
         """
-        plt.figure(figsize=(14, 9))
-        plt.scatter(X[y == 1, 0], X[y == 1, 1], c='green', marker='+', label='class 1')
-        plt.scatter(X[y == 0, 0], X[y == 0, 1], c='red', marker='D', label='class 0')
-        plt.xlabel("Feature 1")
-        plt.ylabel("Feature 2")
-        plt.title('Classification decision plane')
+        fig, ax = plt.subplots(figsize=(18, 9))
+        display = DecisionBoundaryDisplay.from_estimator(self,
+                                                         self.X_,
+                                                         response_method='predict',
+                                                         xlabel='Feature1',
+                                                         ylabel='Feature2',
+                                                         alpha=0.55,
+                                                         ax=ax)
+        display.ax_.scatter(self.X_[self.y_ == 1, 0], self.X_[self.y_ == 1, 1], c='green', marker='+', label='class 1')
+        display.ax_.scatter(self.X_[self.y_ == 0, 0], self.X_[self.y_ == 0, 1], c='red', marker='D', label='class 0')
+        display.ax_.set_title('Classification decision plane')
         legend_elements = [patches.Patch(facecolor='green', edgecolor='green', label='Class 1'),
                            patches.Patch(facecolor='red', edgecolor='red', label='Class 2'),
                            patches.Patch(facecolor='black', edgecolor='black', label='Separating plane')]
-        plt.legend(handles=legend_elements)
-        x1_min, x1_max = X[:, 0].min() - .1, X[:, 0].max() + .1
-        x2_min, x2_max = X[:, 1].min() - .1, X[:, 1].max() + .1
-        xx, yy = np.meshgrid(np.arange(x1_min, x1_max, grid_step),
-                             np.arange(x2_min, x2_max, grid_step))
-        Z = self.predict(np.c_[xx.ravel(), yy.ravel()], to_draw=True)
-        Z = Z.reshape(xx.shape)
-        plt.contour(xx, yy, Z, levels=[0.1], colors='black')
+        display.ax_.legend(handles=legend_elements)
         plt.show()
 
     def predict(self, X, to_draw=False):

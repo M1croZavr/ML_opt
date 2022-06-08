@@ -107,8 +107,9 @@ def stoch_descent(fun_anl, lr,
 
 
 def simulated_annealing(fun_anl, bounds,
-                        t_max=10, t_min=0.001, max_iter=500, plot=False):
+                        t_max=10, t_min=0.001, t_ch=0.5, max_iter=500, plot=False):
     """Optimizes function of n variable -> min by simulated annealing method.
+    linear temperature changing.
 
     Positional arguments:
     fun_anl -- function analytic form
@@ -117,6 +118,7 @@ def simulated_annealing(fun_anl, bounds,
     Keyword arguments:
     t_max -- initial temperature
     t_min -- minimal temperature
+    t_ch -- constant for linear temperature changing each iteration
     max_iter -- Maximum iteration of algorithm(default=500)
     plot -- Draw plot(default=False)
     """
@@ -128,6 +130,7 @@ def simulated_annealing(fun_anl, bounds,
     current_energy = fun_lambda(*state)
     t = t_max
     points = []
+    energy_history = [current_energy]
 
     def generate_state_candidate(x, fraction):
         """Move x to the right or to the left"""
@@ -150,12 +153,13 @@ def simulated_annealing(fun_anl, bounds,
             if np.random.rand() <= p:
                 current_energy = energy_candidate
                 state = state_candidate
-        t = t_max * 0.1 / i
+        t = t_max * t_ch / i
         if t <= t_min:
             print('Температура достигла минимума')
             break
-        if i % 5 == 1:
-            if plot:
+        if plot:
+            energy_history.append(current_energy)
+            if i % 10 == 0:
                 if len(variables) == 1:
                     points.append([state[0], current_energy])
                 elif len(variables) == 2:
@@ -166,6 +170,8 @@ def simulated_annealing(fun_anl, bounds,
         if len(variables) == 1:
             x_draw = np.arange(*bounds[str(variables[0])], 0.05)
             plotting.make_annealing_plot_2d(x_draw, [fun_lambda(x_i) for x_i in x_draw], np.array(points))
+        plotting.plot_energy_history(energy_history)
+
     res_f, res_x = fun_lambda(*state), dict(zip(variables, state))
     print(f'f(X) = {res_f}, X = {res_x}')
     return res_f, res_x
@@ -174,7 +180,7 @@ def simulated_annealing(fun_anl, bounds,
 def genetic_algorithm(fun_anl, bounds,
                       n_bits=16, n_pop=100, r_cross=0.9,
                       max_iter=500, plot=False):
-    """Optimizes function of n variable -> min by simulated annealing method.
+    """Optimizes function of n variable -> min by genetic algorithm.
 
     Positional arguments:
     fun_anl -- function analytic form
@@ -183,7 +189,7 @@ def genetic_algorithm(fun_anl, bounds,
     Keyword arguments:
     n_bits -- bits per one variable(default=16)
     n_pop -- population size(default=100)
-    r_cross -- crossover rate
+    r_cross -- crossover rate(default=0.9)
     max_iter -- Maximum iteration of algorithm(default=500)
     plot -- Draw plot(default=False)
     """
