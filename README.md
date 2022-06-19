@@ -1,6 +1,6 @@
 # ML_opt
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![NumPy](https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white) ![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)
-PyPi link: [a link]((https://pypi.org/project/mloptima/0.0.1/))
+[PyPi project link](https://pypi.org/project/mloptima/0.0.1/)
 ## Repository of optimization methods in machine learning.
 ## Machine Learning models and valuable visualization.
 1. Two-variable function extrema finding and visualization implementation. Use User interface notebook twovarextremas Jupyter Notebook with downloaded modules.
