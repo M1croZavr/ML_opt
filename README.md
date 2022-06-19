@@ -1,4 +1,5 @@
 # ML_opt
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ## Repository of optimization methods in machine learning.
 ## Machine Learning models and valuable visualization.
 1. Two-variable function extrema finding and visualization implementation. Use User interface notebook twovarextremas Jupyter Notebook with downloaded modules.
