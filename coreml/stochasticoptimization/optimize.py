@@ -8,7 +8,7 @@ from . import plotting
 from sympy import lambdify, derive_by_array
 
 
-__all__ = ['stoch_descent']
+__all__ = ['stoch_descent', 'simulated_annealing', 'genetic_algorithm']
 
 
 def stoch_descent(fun_anl, lr,
@@ -179,109 +179,92 @@ def simulated_annealing(fun_anl, bounds,
 
 
 def genetic_algorithm(fun_anl, bounds,
-                      n_bits=16, n_pop=100, r_cross=0.9,
-                      max_iter=500, plot=False):
-    """Optimizes function of n variable -> min by genetic algorithm.
+                      n_bits=16, n_pop=100, p_c=0.85, max_iter=500):
+    """Optimizes continuous function of n variable -> min by genetic algorithm.
 
     Positional arguments:
     fun_anl -- function analytic form
     bounds -- dict, dictionary of bounds for each variable
 
     Keyword arguments:
-    n_bits -- bits per one variable(default=16)
-    n_pop -- population size(default=100)
-    r_cross -- crossover rate(default=0.9)
-    max_iter -- Maximum iteration of algorithm(default=500)
-    plot -- Draw plot(default=False)
+    n_bits -- number of candidate's bits(chromosomes) per one variable(default=16)
+    n_pop -- actual population size(default=100)
+    p_c -- probability of making crossover between two parents(default=0.85)
+    max_iter -- Number of generations(default=500)
     """
     fun = utils_twovarextremas.preproc_fun(fun_anl)
     variables = tuple(fun.atoms(sympy.Symbol))
     fun_lambda = lambdify(variables, fun)
-    r_mut = 1.0 / (float(n_bits) * len(bounds))
+    # Probability of children bit mutation
+    p_m = 1.0 / (float(n_bits) * len(bounds))
 
-    # decode bitstring to numbers
-    def decode(bounds, n_bits, bitstring):
-        decoded = list()
+    # Decoding bitstring to float number for each variable
+    def decode(bounds, n_bits, bitstring, variables):
+        # Decoded consists of float values for each variable figured out from bitstring
+        decoded = []
         largest = 2 ** n_bits
         for i, variable in enumerate(variables):
             variable = str(variable)
-            # extract the substring
+            # Extract the substring for this variable
             start, end = i * n_bits, (i * n_bits) + n_bits
             substring = bitstring[start:end]
-            # convert bitstring to a string of chars
+            # Convert bitstring to a string of bit chars
             chars = ''.join([str(s) for s in substring])
-            # convert string to integer
+            # Convert string to integer from binary system
             integer = int(chars, 2)
-            # scale integer to desired range
+            # Scale value and fit into the bounds
             value = bounds[variable][0] + (integer / largest) * (bounds[variable][1] - bounds[variable][0])
-            # store
             decoded.append(value)
         return decoded
 
-    # tournament selection
-    def selection(pop, scores, k=3):
+    # Tournament selection
+    # Selects the candidate which has the best value (-> min) among k random relatives
+    def selection(pop, scores, k=5):
         # first random selection
         selection_ix = np.random.randint(len(pop))
-        for ix in np.random.randint(0, len(pop), k - 1):
-            # check if better (e.g. perform a tournament)
+        relatives = np.random.randint(0, len(pop), k - 1)
+        for ix in relatives:
             if scores[ix] < scores[selection_ix]:
                 selection_ix = ix
         return pop[selection_ix]
 
-    # crossover two parents to create two children
-    def crossover(p1, p2, r_cross):
-        # children are copies of parents by default
+    # Crossover two parents to create two children with probability
+    def crossover(p1, p2, p):
+        # Initially children are equal to their parents
         c1, c2 = p1.copy(), p2.copy()
-        # check for recombination
-        if np.random.rand() < r_cross:
-            # select crossover point that is not on the end of the string
-            pt = np.random.randint(1, len(p1) - 2)
-            # perform crossover
-            c1 = p1[:pt] + p2[pt:]
-            c2 = p2[:pt] + p1[pt:]
+        if np.random.rand() <= p:
+            # Perform crossover
+            crossover_point = np.random.randint(1, len(p1) - 1)
+            c1 = p1[:crossover_point] + p2[crossover_point:]
+            c2 = p2[:crossover_point] + p1[crossover_point:]
         return [c1, c2]
 
-    # mutation operator
-    def mutation(bitstring, r_mut):
+    # Mutation of children with probability
+    def mutation(bitstring, p):
         for i in range(len(bitstring)):
-            # check for a mutation
-            if np.random.rand() < r_mut:
-                # flip the bit
+            if np.random.rand() < p:
                 bitstring[i] = 1 - bitstring[i]
 
-    # genetic algorithm
-    def genetic_algorithm(objective, bounds, n_bits, n_iter, n_pop, r_cross, r_mut):
-        # initial population of random bitstring
-        pop = [np.random.randint(0, 2, n_bits * len(bounds)).tolist() for _ in range(n_pop)]
-        # keep track of best solution
-        best, best_eval = 0, objective(*decode(bounds, n_bits, pop[0]))
-        # enumerate generations
-        for gen in range(n_iter):
-            # decode population
-            decoded = [decode(bounds, n_bits, p) for p in pop]
-            # evaluate all candidates in the population
+    def overall(objective, bounds, chromosomes, generations, population_size, p_c, p_m, vars):
+        population = [np.random.randint(0, 2, n_bits * len(bounds)).tolist() for _ in range(population_size)]
+        best, best_eval = 0, objective(*decode(bounds, chromosomes, population[0], vars))
+        for gen in range(generations):
+            decoded = [decode(bounds, chromosomes, p, vars) for p in population]
             scores = [objective(*d) for d in decoded]
-            # check for new best solution
-            for i in range(n_pop):
+            for i in range(population_size):
                 if scores[i] < best_eval:
-                    best, best_eval = pop[i], scores[i]
-                    print(">%d, new best f(%s) = %f" % (gen,  decoded[i], scores[i]))
-            # select parents
-            selected = [selection(pop, scores) for _ in range(n_pop)]
-            # create the next generation
-            children = list()
-            for i in range(0, n_pop, 2):
-                # get selected parents in pairs
-                p1, p2 = selected[i], selected[i + 1]
-                # crossover and mutation
-                for c in crossover(p1, p2, r_cross):
-                    # mutation
-                    mutation(c, r_mut)
-                    # store for next generation
-                    children.append(c)
-            # replace population
-            pop = children
+                    best, best_eval = decoded[i], scores[i]
+                    print(f'Generation: {gen} | X = {best} | F(X) = {best_eval}')
+            selected = [selection(population, scores) for _ in range(population_size)]
+            # Next generation is coming
+            children = []
+            for pair in range(0, population_size, 2):
+                p1, p2 = selected[pair], selected[pair + 1]
+                for child in crossover(p1, p2, p_c):
+                    mutation(child, p_m)
+                    children.append(child)
+            population = children
         return [best, best_eval]
-    res_x, res_f = genetic_algorithm(fun_lambda, bounds, n_bits, max_iter, n_pop, r_cross, r_mut)
-    print(f'f(X) = {res_f}, X = {res_x}')
+    res_x, res_f = overall(fun_lambda, bounds, n_bits, max_iter, n_pop, p_c, p_m, variables)
+    print(f'f(X) = {res_f}, X = {dict(zip(variables, res_x))}')
     return res_f, res_x
