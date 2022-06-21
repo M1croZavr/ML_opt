@@ -1,5 +1,6 @@
-from twovarextremas import plotting_3d, utils_twovarextremas
-from onedimensionaloptimization import plotting
+from ..twovarextremas import utils_twovarextremas
+from ..twovarextremas import plotting_3d
+from ..onedimensionaloptimization import plotting
 import numpy as np
 import functools
 import sympy

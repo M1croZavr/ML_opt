@@ -1,4 +1,4 @@
-from twovarextremas.utils_twovarextremas import preproc_fun
+from ..twovarextremas.utils_twovarextremas import preproc_fun
 import numpy as np
 import sympy
 from scipy.optimize import minimize

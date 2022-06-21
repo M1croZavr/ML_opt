@@ -1,4 +1,4 @@
-from matplotlib import pyplot as plt, cm
+from matplotlib import pyplot as plt
 import numpy as np
 
 
@@ -28,4 +28,13 @@ def make_annealing_plot_2d(x, y, points):
     plt.ylabel('Y')
     plt.legend()
     plt.title('Function and iteration points')
+    plt.show()
+
+
+def plot_energy_history(energy):
+    plt.figure(figsize=(16, 8))
+    plt.plot(np.arange(0, len(energy)), energy)
+    plt.xlabel('Iteration')
+    plt.ylabel('Energy (Function value)')
+    plt.title('Dependence of the value of a given function on iteration')
     plt.show()

@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from twovarextremas.utils_twovarextremas import preproc_fun
+from ..twovarextremas.utils_twovarextremas import preproc_fun
 import sympy
 import functools
 

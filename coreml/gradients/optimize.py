@@ -1,9 +1,10 @@
 import sympy
 import pandas as pd
 import numpy as np
-from twovarextremas import utils_twovarextremas, plotting_3d
+from ..twovarextremas import utils_twovarextremas
+from ..twovarextremas import plotting_3d
 from .plotting import plotter
-from onedimensionaloptimization import optimize as one_optimization, plotting
+from ..onedimensionaloptimization import optimize as one_optimization, plotting
 from sympy import lambdify, derive_by_array
 from scipy.optimize import fmin_cg
 

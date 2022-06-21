@@ -1,6 +1,6 @@
 import numpy as np
-from onedimensionaloptimization import utils_onedimensionaloptimization as uo
-from twovarextremas import plotting_3d
+from ..onedimensionaloptimization import utils_onedimensionaloptimization as uo
+from ..twovarextremas import plotting_3d
 from sklearn import preprocessing
 
 
