@@ -3,7 +3,7 @@
 [PyPi project link](https://pypi.org/project/mloptima/0.0.1/)
 ## Repository of optimization methods in machine learning.
 ## Project structure
-.
+```bash
 ├── classification
 │   ├── __init__.py
 │   └── models.py
@@ -40,7 +40,7 @@
     ├── __init__.py
     ├── plotting_3d.py
     └── utils_twovarextremas.py
-
+```
 ## Machine Learning models and valuable visualization.
 1. Two-variable function extrema finding and visualization implementation. Use User interface notebook twovarextremas Jupyter Notebook with downloaded modules.
 2. One dimensional optimization(minimization) methods implementation and visualization. Use User interface notebook onedimensionaloptimization Jupyter Notebook with downloaded modules.
