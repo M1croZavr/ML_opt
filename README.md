@@ -25,7 +25,7 @@
 │   ├── __init__.py
 │   ├── optimize.py
 │   ├── plotting.py
-│   └── utils_onedimensionaloptimization.py
+│   └── utils.py
 ├── regression
 │   ├── __init__.py
 │   └── models.py

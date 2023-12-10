@@ -2,7 +2,7 @@ import sympy
 import pandas as pd
 import numpy as np
 from ..twovarextremas import utils_twovarextremas
-from .utils_onedimensionaloptimization import update_vars, parabolic_approximation, spi_behaving
+from .utils import update_vars, parabolic_approximation, spi_behaving
 from .plotting import plot_scatter_and_line, plot_parabola_and_line
 from sympy.utilities.lambdify import lambdify
 from scipy.optimize import line_search

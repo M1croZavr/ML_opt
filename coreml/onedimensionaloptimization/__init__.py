@@ -1,1 +1,1 @@
-from . import optimize, utils_onedimensionaloptimization, plotting
+from . import optimize, utils, plotting

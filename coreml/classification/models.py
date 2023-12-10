@@ -1,48 +1,50 @@
 import numpy as np
-from ..onedimensionaloptimization import utils_onedimensionaloptimization as uo
+from ..onedimensionaloptimization import utils as uo
 from sklearn import preprocessing, svm, pipeline, linear_model
 from matplotlib import pyplot as plt, patches
 
 
 def sigmoid(wx):
+    """Sigmoid function"""
     return 1 / (1 + np.exp(-1 * wx))
 
 
 class LogisticRegressionRidge:
     """
-    Logistic regression with Ridge regularization by coefficient C(inverse of lambda, reg term = 1 / C)
+    Logistic regression with Ridge regularization by coefficient C(inverse of lambda, reg term = 1 / C).
 
     LogisticRegression fits a linear model with sigmoid function coefficients w = (w1, ..., wp)
     to minimize the log loss between the observed targets in the dataset.
 
     Parameters
     ----------
-    lr -- float, default=0.001
-        Learning rate in SGD
-    eps -- float, default=0.00001
-        Convergence condition coefficient in SGD
-    C -- float, default=1
-        Inverse of regularization coefficient
-    degree -- int, default=None
+    lr : float, default=0.001
+        Learning rate in SGD.
+    eps : float, default=0.00001
+        Convergence condition coefficient in SGD.
+    C : float, default=1
+        Inverse of regularization coefficient.
+    degree : int, default=None
         Defines maximum degree of generating polynomial features. Leave default to fit without polynomial.
-    plot -- bool, default=False
-        Draw result plot or not
+    plot : bool, default=False
+        Draw result plot or not.
 
     Attributes
     ----------
-    w -- array, weights of features found by SGD
+    w : array,
+        Weights of features found by SGD.
     ...
     """
+
     def __init__(self, lr=0.001, eps=0.00001, C=1, degree=None, plot=False):
         self.lr = lr
         self.eps = eps
         self.C = C
-        if degree:
-            self.degree = degree
-            self.poly_features = preprocessing.PolynomialFeatures(degree=self.degree)
-        else:
-            self.degree = None
+        self.degree = degree
+        if self.degree is None:
             self.poly_features = None
+        else:
+            self.poly_features = preprocessing.PolynomialFeatures(degree=self.degree)
         self.plot = plot
         self.w = None
 
@@ -52,8 +54,10 @@ class LogisticRegressionRidge:
 
         Parameters
         ----------
-        X -- numpy ndarray, features data 2d array
-        y -- numpy ndarray, targets data
+        X : numpy ndarray
+            Features data 2d array.
+        y -- numpy ndarray
+            Targets data.
 
         Returns
         -------
@@ -62,9 +66,11 @@ class LogisticRegressionRidge:
         if self.poly_features:
             X = self.poly_features.fit_transform(X)
         else:
-            X = np.hstack((np.ones((X.shape[0], 1)), X))
+            X = np.hstack(
+                (np.ones((X.shape[0], 1)), X)
+            )
         indices = np.arange(X.shape[0])
-        self.w = np.ones((X.shape[1], ))
+        self.w = np.ones((X.shape[1],))
         w_old = None
         while (w_old is None) or (np.sum(np.sqrt((self.w - w_old) ** 2)) > self.eps):
             np.random.shuffle(indices)
@@ -72,9 +78,13 @@ class LogisticRegressionRidge:
             y_sh = y[indices]
             w_old = self.w
             for i in range(X.shape[0]):
-                self.w -= self.lr * np.array([(sigmoid(self.w.dot(X_sh[i])) - y_sh[i]) * X_sh[i, j] + (1 / self.C) * self.w[j] if j != 0
-                                              else (sigmoid(self.w.dot(X_sh[i])) - y_sh[i]) * X_sh[i, j]
-                                              for j in range(len(self.w))])
+                self.w -= self.lr * np.array(
+                    [
+                        (sigmoid(self.w.dot(X_sh[i])) - y_sh[i]) * X_sh[i, j] + (1 / self.C) * self.w[j] if j != 0
+                        else (sigmoid(self.w.dot(X_sh[i])) - y_sh[i]) * X_sh[i, j]
+                        for j in range(len(self.w))
+                    ]
+                )
         if self.plot:
             self.make_plot(X[:, 1:3], y)
         return self
@@ -137,8 +147,10 @@ class LogisticRegressionRidge:
         return (np.sum(self.w * X, axis=1) >= threshold).astype(np.float32)
 
     def __str__(self):
-        if not(self.w is None):
-            return 'y = ' + 'sigmoid(' + ' + '.join([f'{self.w[i]}x{i}' if i != 0 else f'{self.w[i]}' for i in range(len(self.w))]) + ')'
+        if not (self.w is None):
+            return 'y = ' + 'sigmoid(' + ' + '.join(
+                [f'{self.w[i]}x{i}' if i != 0 else f'{self.w[i]}' for i in range(len(self.w))]
+            ) + ')'
         else:
             return 'Fit model before calling __str__'
 
@@ -168,6 +180,7 @@ class LogisticRegressionLasso:
     w -- array, weights of features found by SGD
     ...
     """
+
     def __init__(self, lr=0.001, eps=0.00005, C=1, degree=None, plot=False):
         self.lr = lr
         self.eps = eps
@@ -199,7 +212,7 @@ class LogisticRegressionLasso:
         else:
             X = np.hstack((np.ones((X.shape[0], 1)), X))
         indices = np.arange(X.shape[0])
-        self.w = np.ones((X.shape[1], ))
+        self.w = np.ones((X.shape[1],))
         w_old = None
         while (w_old is None) or (np.sum(np.sqrt((self.w - w_old) ** 2)) > self.eps):
             np.random.shuffle(indices)
@@ -207,9 +220,10 @@ class LogisticRegressionLasso:
             y_sh = y[indices]
             w_old = self.w
             for i in range(X.shape[0]):
-                self.w -= self.lr * np.array([(sigmoid(self.w.dot(X_sh[i])) - y_sh[i]) * X_sh[i, j] + (1 / self.C) * uo.sign(self.w[j]) if j != 0
-                                              else (sigmoid(self.w.dot(X_sh[i])) - y_sh[i]) * X_sh[i, j]
-                                              for j in range(len(self.w))])
+                self.w -= self.lr * np.array(
+                    [(sigmoid(self.w.dot(X_sh[i])) - y_sh[i]) * X_sh[i, j] + (1 / self.C) * uo.sign(self.w[j]) if j != 0
+                     else (sigmoid(self.w.dot(X_sh[i])) - y_sh[i]) * X_sh[i, j]
+                     for j in range(len(self.w))])
         if self.plot:
             self.make_plot(X[:, 1:3], y)
         return self
@@ -272,8 +286,9 @@ class LogisticRegressionLasso:
         return (np.sum(self.w * X, axis=1) >= threshold).astype(np.float32)
 
     def __str__(self):
-        if not(self.w is None):
-            return 'y = ' + 'sigmoid(' + ' + '.join([f'{self.w[i]}x{i}' if i != 0 else f'{self.w[i]}' for i in range(len(self.w))]) + ')'
+        if not (self.w is None):
+            return 'y = ' + 'sigmoid(' + ' + '.join(
+                [f'{self.w[i]}x{i}' if i != 0 else f'{self.w[i]}' for i in range(len(self.w))]) + ')'
         else:
             return 'Fit model before calling __str__'
 
@@ -304,9 +319,10 @@ class SupportVectorClassifier:
         Pipeline with support vector classifier model and scaler
     ...
     """
+
     def __init__(self, C=1, kernel='rbf', degree=3, eps=0.001, plot=False):
         self.C = C
-        self.kernel=kernel
+        self.kernel = kernel
         self.degree = degree
         self.eps = eps
         self.pipeline = pipeline.Pipeline([('Scaler', preprocessing.StandardScaler()),
@@ -401,6 +417,7 @@ class SupportVectorClassifierDual:
         Pipeline with support vector classifier model and scaler
     ...
     """
+
     def __init__(self, reg='Ridge', C=1, degree=None, eps=0.005, plot=False):
         if reg.lower() == 'ridge':
             self.reg = 'l2'
@@ -509,6 +526,7 @@ class LogisticRegressionRBF:
     model -- logistic regression model.
     ...
     """
+
     def __init__(self, eps=0.00001, C=1, gamma=0.1, plot=False):
         self.eps = eps
         self.C = C
@@ -520,6 +538,7 @@ class LogisticRegressionRBF:
     def __make_rbf_features(self, X):
         def rbf_similarity(landmark, x_i):
             return np.exp(-self.gamma * np.sqrt(np.sum((x_i - landmark) ** 2)) ** 2)
+
         new_X = np.zeros((X.shape[0], self.X.shape[0]))
         for i, l in enumerate(self.X):
             new_column = [rbf_similarity(l, x_i) for x_i in X]

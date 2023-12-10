@@ -1,5 +1,5 @@
 import numpy as np
-from ..onedimensionaloptimization import utils_onedimensionaloptimization as uo
+from ..onedimensionaloptimization import utils as uo
 from ..twovarextremas import plotting_3d
 from sklearn import preprocessing
 
