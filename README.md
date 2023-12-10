@@ -3,7 +3,7 @@
 [PyPi project link](https://pypi.org/project/mloptima/0.0.1/)
 ## Repository of optimization methods in machine learning.
 ## Project structure
-.
+```bash
 ├── classification
 │   ├── __init__.py
 │   └── models.py
@@ -25,7 +25,7 @@
 │   ├── __init__.py
 │   ├── optimize.py
 │   ├── plotting.py
-│   └── utils.py
+│   └── utils_onedimensionaloptimization.py
 ├── regression
 │   ├── __init__.py
 │   └── models.py
@@ -40,7 +40,7 @@
     ├── __init__.py
     ├── plotting_3d.py
     └── utils_twovarextremas.py
-
+```
 ## Machine Learning models and valuable visualization.
 1. Two-variable function extrema finding and visualization implementation. Use User interface notebook twovarextremas Jupyter Notebook with downloaded modules.
 2. One dimensional optimization(minimization) methods implementation and visualization. Use User interface notebook onedimensionaloptimization Jupyter Notebook with downloaded modules.
@@ -50,3 +50,6 @@
 6. Classification. Implementation of LogisticRegression(Ridge, Lasso), LogisticRegression with RBF kernel function, SVMs classifiers. Use User Interface notebook classification notebook colab with downloaded modules.
 7. Integer linear programming. Implementation of Tabular Simplex method and Gomori cutting plane method for integer linear programming.
 8. Stochastic optimization. Implementation of Stochastic gradient descent, Support vector classifier on 2 classes optimized by SGD, simulated annealing algorithm for function minimization, genetic algorithm for function minimization. Built in visualization implemented.
+
+## Usage examples
+Use colaboratory notebooks to try library.
