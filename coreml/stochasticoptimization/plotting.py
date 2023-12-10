@@ -1,5 +1,5 @@
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 def make_level_lines_plot(X, Y, Z, points_history, var1, var2):

@@ -1,7 +1,8 @@
+import re
+
+import numpy as np
 from sympy.parsing.sympy_parser import standard_transformations, \
     implicit_multiplication_application, parse_expr
-import numpy as np
-import re
 
 
 class NonDifferentialError(Exception):

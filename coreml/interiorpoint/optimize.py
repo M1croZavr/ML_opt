@@ -1,8 +1,9 @@
-from ..twovarextremas.utils_twovarextremas import preproc_fun
 import numpy as np
 import sympy
 from scipy.optimize import minimize
+
 from .plotting import draw_level_lines, draw_lines, draw_feasible_polygon
+from ..twovarextremas.utils_twovarextremas import preproc_fun
 
 
 def newton_dual(fun, g, x_init, plot=True):

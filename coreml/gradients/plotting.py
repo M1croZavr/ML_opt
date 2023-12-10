@@ -1,9 +1,11 @@
-from ..twovarextremas import utils_twovarextremas
-from ..twovarextremas import plotting_3d
-from ..onedimensionaloptimization import plotting
-import numpy as np
 import functools
+
+import numpy as np
 import sympy
+
+from ..onedimensionaloptimization import plotting
+from ..twovarextremas import plotting_3d
+from ..twovarextremas import utils_twovarextremas
 
 
 def plotter(left, right, n_points=100):

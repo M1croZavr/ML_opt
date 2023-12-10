@@ -1,12 +1,12 @@
-import sympy
-import pandas as pd
 import numpy as np
-from ..twovarextremas import utils_twovarextremas
-from ..twovarextremas import plotting_3d
-from ..onedimensionaloptimization import plotting as one_plotting
-from . import plotting
+import pandas as pd
+import sympy
 from sympy import lambdify, derive_by_array
 
+from . import plotting
+from ..onedimensionaloptimization import plotting as one_plotting
+from ..twovarextremas import plotting_3d
+from ..twovarextremas import utils_twovarextremas
 
 __all__ = ['stoch_descent', 'simulated_annealing', 'genetic_algorithm']
 

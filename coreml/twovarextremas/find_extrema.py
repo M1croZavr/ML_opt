@@ -1,7 +1,8 @@
 import sympy
+
+from .extrema_methods import find_extrema, find_extrema_lagrange
 from .plotting_3d import make_3d_plot, make_3d_plot_lagrange, make_level_lines_plot
 from .utils_twovarextremas import preproc_fun, check_constraints, create_xyz
-from .extrema_methods import find_extrema, find_extrema_lagrange
 
 
 def find_local_2var(vars_, fun_anl, constr=None, plot=False, plot_ll=False):

@@ -1,7 +1,8 @@
 import numpy as np
-from ..onedimensionaloptimization import utils as uo
-from sklearn import preprocessing, svm, pipeline, linear_model
 from matplotlib import pyplot as plt, patches
+from sklearn import preprocessing, svm, pipeline, linear_model
+
+from ..onedimensionaloptimization import utils as uo
 
 
 def sigmoid(wx):

@@ -1,11 +1,12 @@
-import sympy
-import pandas as pd
 import numpy as np
-from ..twovarextremas import utils_twovarextremas
-from .utils import update_vars, parabolic_approximation, spi_behaving
-from .plotting import plot_scatter_and_line, plot_parabola_and_line
-from sympy.utilities.lambdify import lambdify
+import pandas as pd
+import sympy
 from scipy.optimize import line_search
+from sympy.utilities.lambdify import lambdify
+
+from .plotting import plot_scatter_and_line, plot_parabola_and_line
+from .utils import update_vars, parabolic_approximation, spi_behaving
+from ..twovarextremas import utils_twovarextremas
 
 
 def golden_section_search(fun_anl, x_l, x_r,

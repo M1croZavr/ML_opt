@@ -1,7 +1,9 @@
-from matplotlib import pyplot as plt
-from ..twovarextremas.utils_twovarextremas import preproc_fun
-import sympy
 import functools
+
+import sympy
+from matplotlib import pyplot as plt
+
+from ..twovarextremas.utils_twovarextremas import preproc_fun
 
 
 def draw_level_lines(X, Y, Z, points, variables):

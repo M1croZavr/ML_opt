@@ -1,13 +1,13 @@
-import sympy
-import pandas as pd
 import numpy as np
-from ..twovarextremas import utils_twovarextremas
-from ..twovarextremas import plotting_3d
+import pandas as pd
+import sympy
+from scipy.optimize import fmin_cg
+from sympy import lambdify, derive_by_array
+
 from .plotting import plotter
 from ..onedimensionaloptimization import optimize as one_optimization, plotting
-from sympy import lambdify, derive_by_array
-from scipy.optimize import fmin_cg
-
+from ..twovarextremas import plotting_3d
+from ..twovarextremas import utils_twovarextremas
 
 __all__ = ['constant_descent', 'splitting_step_descent', 'steepest_descent', 'conjugate_gradients']
 

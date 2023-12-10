@@ -1,7 +1,8 @@
 import numpy as np
+from sklearn import preprocessing
+
 from ..onedimensionaloptimization import utils as uo
 from ..twovarextremas import plotting_3d
-from sklearn import preprocessing
 
 
 class LinearRegression:

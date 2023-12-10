@@ -1,6 +1,6 @@
-from sklearn import pipeline, preprocessing
 import numpy as np
 from matplotlib import pyplot as plt, patches
+from sklearn import pipeline, preprocessing
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.inspection import DecisionBoundaryDisplay
 
