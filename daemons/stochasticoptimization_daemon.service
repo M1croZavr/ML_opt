@@ -1,0 +1,10 @@
+[Unit]
+Description=Stochastic optimization background serivce
+
+[Service]
+Type=simple
+ExecStart=/Users/m1crozavr/anaconda3/envs/monet/bin/python3.10 /Users/m1crozavr/PycharmProjects/ML_opt/daemons/stochasticoptimization_daemon.py -lr 0.025 -d 1 -c 2
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
