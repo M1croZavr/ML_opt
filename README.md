@@ -53,3 +53,10 @@
 
 ## Usage examples
 Use colaboratory notebooks to try library.
+
+## Local deploy
+1. Make git clone
+2. Create environment with python3.8+
+3. pip install -r requirements.txt
+4. In repository root make pip install --editable . or pip install mloptima
+5. To use daemons change WorkingDirectory and ExecStart in .service files
