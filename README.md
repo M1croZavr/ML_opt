@@ -60,3 +60,11 @@ Use colaboratory notebooks to try library.
 3. pip install -r requirements.txt
 4. In repository root make pip install --editable . or pip install mloptima
 5. To use daemons change WorkingDirectory and ExecStart in .service files
+   sudo ln -s path_to_service_file  /usr/lib/systemd/system/*.service
+   sudo systemctl daemon-reload
+   sudo systemctl start timestamp.service
+   sudo systemctl status timestamp.service
+   sudo systemctl stop timestamp.service
+
+
+
